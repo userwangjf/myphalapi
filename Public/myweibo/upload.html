@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta http-equiv="CONTENT-TYPE" content="text/html;charset=utf-8" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.h5upload.js"></script>
+
+</head>
+
+<body>
+	<br>
+	<hr>
+    <p>
+	<font size="14px">
+        新的微博
+	</font>
+    </p>
+    <form action="/phalapi/myweibo/?service=Weibo.addWeibo" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="MAX_FILE_SIZE" value="">
+        <font size="5">类型:</font><input type="text" name="type" size="10" value="公开"><br>
+        <font size="5">内容:</font><input type="text" name="content" size="50" value="新的微博"><br>
+		<p><font size="5">图片的创建时间</font></p>
+        PIC1:<input id="ct1" type="text" name="ctime[]"/><br>
+        PIC2:<input id="ct2" type="text" name="ctime[]"/><br>
+        PIC3:<input id="ct3" type="text" name="ctime[]"/><br>
+        PIC4:<input id="ct4" type="text" name="ctime[]"/><br>
+		<p><font size=
+    	<div id="inputfiles"></div>
+        <input type="submit" value="上传微博"/>
+    	<script>$("#inputfiles").h5upload();</script>
+    </form>
+
+	<script>  
+    	window.onload = function(){  
+        	var psel = document.getElementById("provSelect1");  
+        	psel.value = "123"; //设置
+        	alert("设置后的value：" + psel.value); //设置后的  
+    	};
+	</script>  
+
+	<script type="text/javascript">  
+	    function _s() {  
+	        var f = document.getElementById("f").files;  
+	        //上次修改时间  
+	        alert(f[0].lastModifiedDate);  
+	        //名称  
+	        alert(f[0].name);  
+	        //大小 字节  
+	        alert(f[0].size);  
+	        //类型  
+	        alert(f[0].type);  
+	    }  
+	</script>
+
+    <br><br>
+	<hr>
+    <br><br>
+	<p>
+	<font size="14px">
+	测试项目
+	</font>
+	</p>
+
+    <form method="post" action="/t1/demo/?service=Examples_Upload.mult_param" enctype="multipart/form-data">
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="submit" value="post参数数组">
+    </form>
+
+    <form method="POST" action="/t1/demo/?service=Examples_Upload.Go" enctype="multipart/form-data">
+        File:<input type="file" name="file"><br>
+        <input type="submit" value="post上传单个文件">
+    </form>
+
+</body>
+
+</html>

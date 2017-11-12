@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <meta http-equiv="CONTENT-TYPE" content="text/html;charset=utf-8" />
+</head>
+<body>
+    <br>
+    <form method="POST" action="/phalapi/demo/?service=Examples_Upload.Go" enctype="multipart/form-data">
+        File:<input type="file" name="file"><br>
+        <input type="submit" value="post上传单个文件">
+    </form>
+
+    <br><br>
+
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="MAX_FILE_SIZE" value="">
+        TYPE:<input type="text" name="type"><br>
+        CONTENT:<input type="text" name="content"><br>
+        PIC1:<input type="file" name="pic[]" /><br>
+        PIC2:<input type="file" name="pic[]" /><br>
+        <input type="submit" value="post上传多个文件"/>
+    </form>
+
+    <br><br>
+
+    <form method="post" action="/phalapi/demo/?service=Examples_Upload.mult_param" enctype="multipart/form-data">
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="text" name="tags[]"/><br>
+        <input type="submit" value="post参数数组">
+    </form>
+
+</body>
+
+</html>
