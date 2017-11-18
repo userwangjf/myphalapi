@@ -15,7 +15,7 @@
         新的微博
 	</font>
     </p>
-    <form action="/phalapi/myweibo/?service=Weibo.addWeibo" method="post" enctype="multipart/form-data">
+    <form action="/myweibo/?service=Weibo.addWeibo" method="post" enctype="multipart/form-data">
         <input type="hidden" name="MAX_FILE_SIZE" value="">
         <font size="5">类型:</font><input type="text" name="type" size="10" value="公开"><br>
         <font size="5">内容:</font><input type="text" name="content" size="50" value="新的微博"><br>
@@ -31,26 +31,14 @@
     </form>
 
 	<script>  
-    	window.onload = function(){  
-        	var psel = document.getElementById("provSelect1");  
-        	psel.value = "123"; //设置
-        	alert("设置后的value：" + psel.value); //设置后的  
+    	window.onload = function(){
+            document.getElementById("ct1").value = "1111";
+            document.getElementById("ct2").value = "2222";
+            document.getElementById("ct3").value = "3333";
+            document.getElementById("ct4").value = "4444";
     	};
 	</script>  
 
-	<script type="text/javascript">  
-	    function _s() {  
-	        var f = document.getElementById("f").files;  
-	        //上次修改时间  
-	        alert(f[0].lastModifiedDate);  
-	        //名称  
-	        alert(f[0].name);  
-	        //大小 字节  
-	        alert(f[0].size);  
-	        //类型  
-	        alert(f[0].type);  
-	    }  
-	</script>
 
     <br><br>
 	<hr>

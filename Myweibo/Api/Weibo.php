@@ -102,7 +102,7 @@ class Api_Weibo extends PhalApi_Api
 
         //处理图片和图片的时间
         $ctime = $_POST['ctime'];
-        $pic = $_FILES['pic'];
+        $pic = $_FILES['uploadfile'];
 
         //按上传日期，准备上传目录
         $stime = date("Y/m",time());
@@ -120,6 +120,9 @@ class Api_Weibo extends PhalApi_Api
 
         for($i=0;$i<count($pic['name']);$i++)
         {
+
+            if($pic['size'][$i] == 0)continue;
+
             //获取源文件的扩展名
             $extName = strrchr($pic['name'][$i], '.');
 
@@ -131,7 +134,7 @@ class Api_Weibo extends PhalApi_Api
             $dstPath = $uploadDir . $dstName;
 
             if (move_uploaded_file($srcPath, $dstPath)) {
-                $urlPath = sprintf("%s/%s/%s",URL_UPLOAD,$stime,$dstName);
+                $urlPath = sprintf("%s/%s",$stime,$dstName);
                 array_push($picture,array('picture' => "$urlPath",'ctime' => "$ctime[$i]"));
             } else {
                 //返回错误信息
