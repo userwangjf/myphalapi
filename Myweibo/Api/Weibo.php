@@ -134,7 +134,7 @@ class Api_Weibo extends PhalApi_Api
             $dstPath = $uploadDir . $dstName;
 
             if (move_uploaded_file($srcPath, $dstPath)) {
-                $urlPath = sprintf("%s/%s",$stime,$dstName);
+                $urlPath = sprintf("%s/%s/%s",'uploads',$stime,$dstName);
                 array_push($picture,array('picture' => "$urlPath",'ctime' => "$ctime[$i]"));
             } else {
                 //返回错误信息

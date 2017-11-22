@@ -29,7 +29,7 @@ class Domain_Weibo {
                 //$weibo[$i]['pic'] = "";
                 if($pic[$j]['wid'] == $weibo[$i]['id'])
                 {
-                    array_push($arr, $pic[$j]['picture']);
+                    array_push($arr, array('url'=>$pic[$j]['picture'], 'ctime'=>$pic[$j]['ctime']));
                 }
             }
             if(count($arr))

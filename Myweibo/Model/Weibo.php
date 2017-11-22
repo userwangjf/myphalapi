@@ -15,7 +15,6 @@ class Model_Weibo extends PhalApi_Model_NotORM {
         return $t_weibo->insert_id();
     }
 
-
     //获取最新的微博列表
     public function getWeibo($id){
         $rs = $this->getORM()
