@@ -19,6 +19,9 @@ class Api_Weibo extends PhalApi_Api
             'addWeibo' => array(
                 'username' 	=> array('name' => 'username', 'default' => 'PHPer', ),
             ),
+            'makeWeibo' => array(
+
+            ),
             'getWeibo' => array(
                 'page' 	=> array('name' => 'page', 'type' => 'int', 'min' => 0, 'max' => 10),
                 'count' => array('name' => 'count', 'type' => 'int', 'min' => 5, 'max' => 50),
@@ -36,6 +39,101 @@ class Api_Weibo extends PhalApi_Api
         //return array('page'=>$this->page,'count'=>$this->count);
         return $dm_weibo->getWeibo($this->page,$this->count);
     }
+
+    //使用json格式上传微博
+    public function makeWeibo() {
+
+        if(!isset($_POST['weibo'])) {
+            DI()->response->setRet(202)->setMsg("未找到正确的微博");
+            return "";
+        }
+
+        //$weibo = array();
+        $weibo = json_decode($_POST['weibo'],true);
+        //return $weibo;
+
+        //按上传日期，准备上传目录
+        $stime = date("Y/m",time());
+        $uploadDir = sprintf('%s/Public/myweibo/uploads/%s/', API_ROOT,$stime);
+        //如果目录不存在，则创建
+        if(!is_dir($uploadDir)) {
+            $res = mkdir($uploadDir,0777,true);
+            if($res) {
+                chmod($uploadDir,0777);
+            } else {
+                //返回错误信息
+                DI()->response->setRet(201)->setMsg("创建上传目录失败");
+                return "";
+            }
+        }
+
+        //拷贝文件到目标
+        $pic = $_FILES['uploadfile'];
+        $picture = array();
+
+        for($i=0;$i<count($pic['name']);$i++)
+        {
+            //获取图片的拍摄时间
+            if(isset($weibo['pic'][$i]['ctime']))
+                $ctime = strtotime($weibo['pic'][$i]['ctime']);
+            else
+            {
+                DI()->response->setRet(201)->setMsg("上传文件的ctime不完整");
+                return "";
+            }
+
+            if($pic['size'][$i] == 0)continue;
+
+            //获取源文件的扩展名
+            $extName = strrchr($pic['name'][$i], '.');
+
+            //使用源文件名和当前时间计算新的文件名
+            $dstName = $ctime.md5($pic['name'][$i].time());
+            $dstName = $dstName . $extName;
+
+            $srcPath = $pic['tmp_name'][$i];
+            $dstPath = $uploadDir . $dstName;
+
+            if (move_uploaded_file($srcPath, $dstPath)) {
+                $urlPath = sprintf("%s/%s/%s",'uploads',$stime,$dstName);
+
+                array_push($picture,array('picture' => "$urlPath",'ctime' => $ctime));
+            } else {
+                //返回错误信息
+                DI()->response->setRet(201)->setMsg("拷贝文件失败");
+                return "";
+            }
+        }
+
+        //return array("content"=>$weibo->content,"pic"=>$picture);
+
+        //将新的微博写入数据库，并获取微博ID
+        $dm_weibo = new Domain_Weibo();
+
+        $newdata = array();
+        $newdata['id'] = 0;//$weibo['id'];
+        $newdata['type'] = $weibo['type'];
+        $newdata['content'] = $weibo['content'];
+        $newdata['isturn'] = 0;//$weibo['isturn'];
+        $newdata['iscomment'] = 0;//$weibo['iscomment'];
+        $newdata['time'] = time();
+        $newdata['praise'] = 0;//$weibo['praise'];
+        $newdata['turn'] = 0;//$weibo['turn'];
+        $newdata['collect'] = 0;//$weibo['collect'];
+        $newdata['comment'] = 0;//$weibo['comment'];
+        $newdata['uid'] = 0;//$weibo['uid'];
+
+        //weibo和picture是分开的表项
+        $id = $dm_weibo->addWeibo($newdata,$picture);
+
+        //返回完整的信息。
+        $weibo['id'] = $id;
+        $weibo['pic'] = $picture;
+
+        return $weibo;
+
+    }
+
 
     public function addWeibo()
     {
@@ -118,6 +216,7 @@ class Api_Weibo extends PhalApi_Api
             }
         }
 
+        //拷贝文件到目标
         for($i=0;$i<count($pic['name']);$i++)
         {
 

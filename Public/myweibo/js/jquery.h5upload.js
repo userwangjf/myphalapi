@@ -13,7 +13,7 @@
     //msg:消息内容，配置项与opt项同
     jq.fn.h5upload = function (opt, msg) {
 	//在服务器里的php文件里，可以使用uploadfile来获取文件，此处uploadfile必须带括号[]，用于上传多个文件
-        opt = jq.extend({ exts: ['jpg', 'gif', 'png', 'jpeg'], max: 9, size: 3145728, del: true, name: 'uploadfile[]' }, opt);
+        opt = jq.extend({ exts: ['jpg', 'gif', 'png', 'jpeg'], max: 6, size: 3145728, del: true, name: 'uploadfile[]' }, opt);
         msg = jq.extend({ exts: "文件格式不合法！", max: "最多允许上传" + opt.max + "张", size: "文件大小不得超过" + (opt.size / 1024) + "kb", del: "是否移除此图像？" }, msg);
         var $self = $(this);
         var $plus = null;
