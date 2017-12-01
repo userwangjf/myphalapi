@@ -42,23 +42,24 @@ class Domain_Weibo {
     }
 
 
-
-
-
     //返回新创建的微博信息
     public function addWeibo($weibo, $picture)
     {
         //添加新微博，并获取微博ID
-        $model = new Model_Weibo();
-        $id = $model->addWeibo($weibo);
+        if($weibo != null) {
+            $model = new Model_Weibo();
+            $id = $model->addWeibo($weibo);
+        }
 
         //添加图片
-        $model = new Model_Picture();
-        for($i=0;$i<count($picture);$i++) {
-            $pic['wid'] = $id;
-            $pic['picture'] = $picture[$i]['picture'];
-            $pic['ctime'] = $picture[$i]['ctime'];
-            $model->addPicture($pic);
+        if($picture != null) {
+            $model = new Model_Picture();
+            for($i=0;$i<count($picture);$i++) {
+                $pic['wid'] = $id;
+                $pic['picture'] = $picture[$i]['picture'];
+                $pic['ctime'] = $picture[$i]['ctime'];
+                $model->addPicture($pic);
+            }
         }
 
         return $id;
