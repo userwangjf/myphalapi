@@ -85,6 +85,10 @@ class Api_Weibo extends PhalApi_Api
             }
         }
 
+
+        if(!isset($_FILES['uploadfile']))
+            goto _make_weibo_db;
+
         //拷贝文件到目标
         $picFile = $_FILES['uploadfile'];
         $picInfo = json_decode($_POST['pics'],true);
@@ -137,6 +141,7 @@ class Api_Weibo extends PhalApi_Api
 
         //返回完整的信息。
         $weibo['id'] = $id;
+        if($picture == null) $picture = array();//返回空的数组
         $weibo['pic'] = $picture;
 
         return $weibo;
