@@ -1,6 +1,6 @@
 <?php
 /**
- * 常用工具接口.
+ * 常用工具接口
  * User: wangjf
  * Date: 18-2-10
  * Time: 上午11:07
@@ -16,36 +16,52 @@ class Api_Misc extends PhalApi_Api
             'diskFree' => array(
 
             ),
-            'regCode' => array(
-
-            ),
             'getConnect' => array(
-
+                'userkey' => array('name' => 'userkey', 'desc' => '用户输入的参数'),
             ),
+
         );
     }
     /**
      * 检查磁盘的剩余空间
      * @desc 获取磁盘的剩余空间
      * @return int      goods_id    商品ID
-     * @return string   goods_name  商品名称
-     * @return int      goods_price 商品价格
-     * @return string   goods_image 商品图片
      * @exception 406 签名失败
      */
     public function diskFree() {
 
         //返回以字节为单位的剩余空间
-        $free = disk_free_space(".");
-        return "$free";
-        //$free = disk_free_space("/media/wangjf/WORK");
-        //return "$free";
+
+        $ret = array();
+
+        $ret['UPLOAD_DIR'] = 0;
+        $ret['UPLOAD_BAK'] = 0;
+
+        $path = DI()->config->get('app.UPLOAD_DIR');
+        if($path) {
+            if(is_dir($path)) {
+                $free = disk_free_space($path);
+                $ret['UPLOAD_DIR'] = $free;
+            }
+        }
+
+        $path = DI()->config->get('app.UPLOAD_BAK');
+        if($path) {
+            if(is_dir($path)) {
+                $free = disk_free_space($path);
+                $ret['UPLOAD_BAK'] = $free;
+            }
+        }
+
+        return $ret;
+
     }
 
     /**
-     * 对服务器进行验证，确保服务器是可连接的，并且服务是正确的
-     * 对输入的参数$_POST['userKey']
-     * 转换为byte后，每个byte全部加1，然后返回
+     * 检查服务器连接
+     * @desc 对服务器进行验证，确保服务器是可连接的，并且服务是正确的
+     * @param $_POST['userKey']
+     * @return 转换为byte后，每个byte全部加1，然后返回
      */
     public function getConnect() {
         if(!isset($_POST['userKey'])) {
@@ -65,24 +81,5 @@ class Api_Misc extends PhalApi_Api
         return $encode;
     }
 
-    /*
-     * 生成新的注册码，每个小时生成一个
-     */
-    public function regCode() {
-        $path = dirname(__FILE__);
-        $filename = $path . "/regcode.php";
-        $mydate = date("Y-m-d");
-        //如果文件已经存在，则检查
-        if(file_exists($filename)) {
-            $myfile = fopen($filename, "r");
-            fgets($myfile);
-        }
-
-        return "邀请码申请成功，请联系管理员";
-    }
-
-    public function regUser() {
-
-    }
 
 }

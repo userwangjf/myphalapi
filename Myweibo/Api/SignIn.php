@@ -6,6 +6,17 @@
  * Time: 上午8:58
  */
 
+/*
+//只有描述
+DI()->logger->error('fail to insert DB');
+
+//描述 + 简单的信息
+DI()->logger->error('fail to insert DB', 'try to register user dogstar');
+
+//描述 + 当时的上下文数据
+$data = array('name' => 'dogstar', 'password' => '123456');
+DI()->logger->error('fail to insert DB', $data);
+*/
 
 class Api_SignIn extends PhalApi_Api
 {
@@ -19,45 +30,12 @@ class Api_SignIn extends PhalApi_Api
                 'signcode'  => array('name' => 'signcode'   , 'desc' => '邀请码'),
             ),
             'signCode' => array(
-                'tokenid'   => array('name' => 'tokenid'    , 'desc' => '登录信息'),
+                'tokenid'   => array('name' => 'tokenid', 'desc' => '登录信息'),
             ),
         );
     }
 
-    /**
-     * 生成新的邀请码
-     * @desc 只有管理员有权限生成新的邀请码，新生成的邀请码写在本目录的signcode.php文件末尾
-     * @desc 默认情况下，邀请码10分钟失效
-     */
-    public function signCode() {
 
-        //检查权限
-
-        if(!isset($_POST['tokenid'])) {
-            DI()->response->setRet(201)->setMsg("tokenid错误");
-            return "";
-        }
-        $tokenid = $_POST['tokenid'];
-
-        $dmAdmin = new Domain_Admin();
-        $ret = $dmAdmin->isAdmin($tokenid);
-
-        if(!($ret)) {
-            DI()->response->setRet(201)->setMsg("非管理员，无此权限");
-            return "";
-        }
-
-        //生成新的邀请码
-        $randCode = "";
-        for($i=0;$i<6;$i++) {
-            $number = rand(0,9);
-            $randCode = "$randCode"."$number";
-        }
-
-        $signcode = "\n//".time().","."$randCode";
-        $this->setSignCode($signcode);
-        return $randCode;
-    }
 
     /**
      * 注册接口
@@ -65,15 +43,17 @@ class Api_SignIn extends PhalApi_Api
      */
     public function signIn() {
 
-        /*
-    user表
-    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `account` char(20) NOT NULL DEFAULT '' COMMENT '用户帐号',
-    `passwd` char(128) NOT NULL DEFAULT '' COMMENT '用户密码的md5',
-    `regis_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '注册时间',
-    `lock` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否锁定（0不锁定、1锁定）',
-    `vemail` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '邮箱验证(0未验证，1已验证)',
-         */
+/*
+user表
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`account` char(20) NOT NULL DEFAULT '' COMMENT '用户帐号',
+`passwd` char(128) NOT NULL DEFAULT '' COMMENT '用户密码的md5',
+`regis_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '注册时间',
+`lock` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否锁定（0不锁定、1锁定）',
+`vemail` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '邮箱验证(0未验证，1已验证)',
+ */
+
+        $dmSignIn = new Domain_SignIn();
 
         //检查帐号是否满足要求
         if(!isset($_POST['account'])) {
@@ -120,18 +100,21 @@ class Api_SignIn extends PhalApi_Api
             return "";
         }
 
-        //检查邀请码是否满足要求
-        if(!isset($_POST['signcode'])) {
-            DI()->response->setRet(201)->setMsg("邀请码不能为空");
-            return "";
-        }
-        $signcode = $_POST['signcode'];
+        //第一个用户不使用邀请码，作为管理员。
+        if($dmSignIn->userSum() > 0) {
 
-        if(!$this->checkSignCode($signcode)) {
-            DI()->response->setRet(201)->setMsg("邀请码错误，请联系管理员获取邀请码");
-            return "";
-        }
+            //检查邀请码是否满足要求
+            if(!isset($_POST['signcode'])) {
+                DI()->response->setRet(201)->setMsg("邀请码不能为空");
+                return "";
+            }
+            $signcode = $_POST['signcode'];
 
+            if(!$this->checkSignCode($signcode)) {
+                DI()->response->setRet(201)->setMsg("邀请码错误，请联系管理员获取邀请码");
+                return "";
+            }
+        }
 
         $user = array();
         $user['account'] = $account;
@@ -140,23 +123,23 @@ class Api_SignIn extends PhalApi_Api
         $user['lock'] = 0;
         $user['vemail'] = 1;
 
-        /*
-  user_info表
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(32) NOT NULL DEFAULT '' COMMENT '用户昵称',
-  `truename` varchar(32) NOT NULL DEFAULT '' COMMENT '真实姓名',
-  `location` varchar(64) NOT NULL DEFAULT '' COMMENT '居住地',
-  `birthday` date NOT NULL COMMENT '生日(日期时间型)',
-  `sex` enum('男','女','未知') NOT NULL DEFAULT '男' COMMENT '性别',
-  `intro` varchar(128) NOT NULL DEFAULT '' COMMENT '一句话介绍自己',
-  `avatar` varchar(128) NOT NULL DEFAULT '' COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
-  `domain` varchar(128) DEFAULT NULL COMMENT '个性域名',
-  `style` varchar(64) NOT NULL DEFAULT '' COMMENT '模板风格',
-  `follow` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
-  `fans` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '粉丝数',
-  `weibo` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发表微博数',
-  `uid` int(10) unsigned NOT NULL,
-        */
+/*
+user_info表
+`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+`username` varchar(32) NOT NULL DEFAULT '' COMMENT '用户昵称',
+`truename` varchar(32) NOT NULL DEFAULT '' COMMENT '真实姓名',
+`location` varchar(64) NOT NULL DEFAULT '' COMMENT '居住地',
+`birthday` date NOT NULL COMMENT '生日(日期时间型)',
+`sex` enum('男','女','未知') NOT NULL DEFAULT '男' COMMENT '性别',
+`intro` varchar(128) NOT NULL DEFAULT '' COMMENT '一句话介绍自己',
+`avatar` varchar(128) NOT NULL DEFAULT '' COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
+`domain` varchar(128) DEFAULT NULL COMMENT '个性域名',
+`style` varchar(64) NOT NULL DEFAULT '' COMMENT '模板风格',
+`follow` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
+`fans` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '粉丝数',
+`weibo` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发表微博数',
+`uid` int(10) unsigned NOT NULL,
+*/
 
         $user_info = array();
 
@@ -174,7 +157,7 @@ class Api_SignIn extends PhalApi_Api
         $user_info['weibo']    = 0;
         $user_info['uid']      = 0;
 
-        $dmSignIn = new Domain_SignIn();
+
         //检查帐号是否重复
         $ret = $dmSignIn->checkRepeat($user['account'],$user_info['username']);
         if(strlen($ret) != 0) {
@@ -190,6 +173,42 @@ class Api_SignIn extends PhalApi_Api
             return "注册失败，请联系管理员";
         }
 
+    }
+
+    /**
+     * 生成新的邀请码
+     * @desc 只有管理员有权限生成新的邀请码，新生成的邀请码写在本目录的signcode.php文件末尾
+     * @desc 默认情况下，邀请码10分钟失效
+     */
+    public function signCode() {
+
+        //检查权限
+
+        if(!isset($_POST['tokenid'])) {
+            DI()->response->setRet(201)->setMsg("tokenid错误");
+            return "";
+        }
+        $tokenid = $_POST['tokenid'];
+
+        $dmAdmin = new Domain_Admin();
+        $ret = $dmAdmin->isAdmin($tokenid);
+
+        if(!($ret)) {
+            DI()->response->setRet(201)->setMsg("非管理员，无此权限");
+            return "";
+        }
+
+        //生成新的邀请码
+        $randCode = "";
+        for($i=0;$i<6;$i++) {
+            $number = rand(0,9);
+            $randCode = "$randCode"."$number";
+        }
+
+        $signcode = "\n//".time().","."$randCode";
+        $this->setSignCode($signcode);
+
+        return $randCode;
     }
 
     /*
@@ -239,8 +258,6 @@ class Api_SignIn extends PhalApi_Api
         fputs($myfile,$code);
         fclose($myfile);
     }
-
-
 
 
 }

@@ -36,4 +36,25 @@ class Model_UserTbl extends PhalApi_Model_NotORM {
             return -1;
     }
 
+    public function loginIn($account,$passwd) {
+        $rs = $this->getORM()
+            ->select('id')
+            ->where('account',$account)
+            ->where('passwd',$passwd)
+            ->fetchAll();
+
+        return $rs;
+    }
+
+    /**
+     * 获取user表的总用户数
+     */
+    public function userSum() {
+        $rs = $this->getORM()
+            ->select('id')
+            ->fetchAll();
+
+        return count($rs);
+    }
+
 }

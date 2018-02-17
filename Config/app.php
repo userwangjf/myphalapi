@@ -25,7 +25,9 @@ return array(
         'Default.Index',
     ),
 
-    'upload_dir' => '/home/wangjf/web/myphalapi/Public/myweibo/uploads',
-    'upload_bak' => '',
+    //'UPLOAD_DIR' => '/storage/sdcard1/myphalapi/Public/myweibo/uploads',
+    //'UPLOAD_BAK' => '/storage/sdcard0/myweibo/uploads',
+    'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo/uploads',
+    'UPLOAD_BAK' => '/home/wangjf/backup/uploads',
 
 );

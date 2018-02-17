@@ -44,5 +44,11 @@ class Domain_SignIn {
         return true;
     }
 
+    public function userSum() {
+
+        $tblUser = new Model_UserTbl();
+        return $tblUser->userSum();
+    }
+
 
 }
