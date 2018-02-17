@@ -24,11 +24,30 @@ class Api_SignIn extends PhalApi_Api
         );
     }
 
-    /*
+    /**
+     * 生成新的邀请码
      * @desc 只有管理员有权限生成新的邀请码，新生成的邀请码写在本目录的signcode.php文件末尾
+     * @desc 默认情况下，邀请码10分钟失效
      */
     public function signCode() {
 
+        //检查权限
+
+        if(!isset($_POST['tokenid'])) {
+            DI()->response->setRet(201)->setMsg("tokenid错误");
+            return "";
+        }
+        $tokenid = $_POST['tokenid'];
+
+        $dmAdmin = new Domain_Admin();
+        $ret = $dmAdmin->isAdmin($tokenid);
+
+        if(!($ret)) {
+            DI()->response->setRet(201)->setMsg("非管理员，无此权限");
+            return "";
+        }
+
+        //生成新的邀请码
         $randCode = "";
         for($i=0;$i<6;$i++) {
             $number = rand(0,9);
@@ -40,9 +59,9 @@ class Api_SignIn extends PhalApi_Api
         return $randCode;
     }
 
-    /*
+    /**
      * 注册接口
-     * @desc 注册接口
+     * @desc 需要提供帐号、密码、昵称、邀请码
      */
     public function signIn() {
 
@@ -164,6 +183,7 @@ class Api_SignIn extends PhalApi_Api
         }
 
         if($dmSignIn->signIn($user,$user_info)) {
+            //邀请码仅使用1次
             $this->setSignCode("\n//======");
             return "注册成功，请登录";
         } else {
@@ -199,7 +219,7 @@ class Api_SignIn extends PhalApi_Api
         $oldCode = $code[1];
 
         $diff = time() - $oldTime;
-        if($diff > (1 * 60 * 60)) { //邀请码一个小时失效
+        if($diff > (10 * 60)) { //邀请码10分钟失效
             return false;
         }
 

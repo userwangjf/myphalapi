@@ -25,6 +25,7 @@ class Api_Misc extends PhalApi_Api
         );
     }
     /**
+     * 检查磁盘的剩余空间
      * @desc 获取磁盘的剩余空间
      * @return int      goods_id    商品ID
      * @return string   goods_name  商品名称
@@ -41,7 +42,7 @@ class Api_Misc extends PhalApi_Api
         //return "$free";
     }
 
-    /*
+    /**
      * 对服务器进行验证，确保服务器是可连接的，并且服务是正确的
      * 对输入的参数$_POST['userKey']
      * 转换为byte后，每个byte全部加1，然后返回

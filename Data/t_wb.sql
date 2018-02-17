@@ -183,21 +183,23 @@ INSERT INTO `t_routes` (`id`, `slug`, `route`) VALUES
 
 CREATE TABLE IF NOT EXISTS `t_sessions` (
   `session_id` varchar(40) NOT NULL DEFAULT '0' COMMENT '计算用户的MD5',
+  `uid` int(10) unsigned NOT NULL COMMENT '用户的id',
   `ip_address` varchar(40) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上次登录时间',
   `user_data` text NOT NULL COMMENT '按json格式，存储用户的数据信息',
   PRIMARY KEY (`session_id`),
-  KEY `last_activity_idx` (`last_activity`)
+  KEY `last_activity_idx` (`last_activity`),
+  KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 转存表中的数据 `t_sessions`
 --
 
-INSERT INTO `t_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('228f506e70830d30b976c86931d72f32', '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392604448, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:4:{s:8:"template";s:1:"4";s:5:"style";s:5:"2.css";s:5:"cover";s:5:"8.jpg";s:4:"suit";s:1:"2";}s:8:"loggedin";b:1;}'),
-('df82ff6d000176efcd03b987d6bd2b56', '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392598136, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:1:{s:4:"suit";s:2:"12";}s:8:"loggedin";b:1;}');
+INSERT INTO `t_sessions` (`session_id`, `uid`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
+('228f506e70830d30b976c86931d72f32', 100, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392604448, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:4:{s:8:"template";s:1:"4";s:5:"style";s:5:"2.css";s:5:"cover";s:5:"8.jpg";s:4:"suit";s:1:"2";}s:8:"loggedin";b:1;}'),
+('df82ff6d000176efcd03b987d6bd2b56', 200, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392598136, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:1:{s:4:"suit";s:2:"12";}s:8:"loggedin";b:1;}');
 
 -- --------------------------------------------------------
 
@@ -261,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `t_user_info` (
   `follow` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
   `fans` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '粉丝数',
   `weibo` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发表微博数',
-  `uid` int(10) unsigned NOT NULL,
+  `uid` int(10) unsigned NOT NULL COMMENT 'user表的id',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `uid` (`uid`)
