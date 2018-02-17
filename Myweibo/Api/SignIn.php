@@ -1,6 +1,6 @@
 <?php
 /**
- * 处理用户信息的api.
+ * 用户注册接口
  * User: wangjf
  * Date: 18-2-16
  * Time: 上午8:58
@@ -13,17 +13,36 @@ class Api_SignIn extends PhalApi_Api
     public function getRules() {
         return array(
             'signIn' => array(
-                'account' => array('name' => 'account',),
-                'passwd'  => array('name' => 'passwd',),
+                'account'   => array('name' => 'account'    , 'desc' => '帐号'),
+                'passwd'    => array('name' => 'passwd'     , 'desc' => '密码'),
+                'username'  => array('name' => 'username'   , 'desc' => '昵称'),
+                'signcode'  => array('name' => 'signcode'   , 'desc' => '邀请码'),
+            ),
+            'signCode' => array(
+                'tokenid'   => array('name' => 'tokenid'    , 'desc' => '登录信息'),
             ),
         );
     }
 
     /*
-     * @desc 注册接口
-        第一个注册的用户（id=0），为管理员
-        先检查参数正确性，然后填充数组。
+     * @desc 只有管理员有权限生成新的邀请码，新生成的邀请码写在本目录的signcode.php文件末尾
+     */
+    public function signCode() {
 
+        $randCode = "";
+        for($i=0;$i<6;$i++) {
+            $number = rand(0,9);
+            $randCode = "$randCode"."$number";
+        }
+
+        $signcode = "\n//".time().","."$randCode";
+        $this->setSignCode($signcode);
+        return $randCode;
+    }
+
+    /*
+     * 注册接口
+     * @desc 注册接口
      */
     public function signIn() {
 
@@ -37,20 +56,22 @@ class Api_SignIn extends PhalApi_Api
     `vemail` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '邮箱验证(0未验证，1已验证)',
          */
 
+        //检查帐号是否满足要求
         if(!isset($_POST['account'])) {
-            DI()->response->setRet(201)->setMsg("用户名不能为空");
+            DI()->response->setRet(201)->setMsg("用户帐号不能为空");
             return "";
         }
         $account = $_POST['account'];
         if(strlen($account) < 4) {
-            DI()->response->setRet(201)->setMsg("用户名长度必须>=4");
+            DI()->response->setRet(201)->setMsg("用户帐号长度必须>=4");
             return "";
         }
         if(strlen($account) > 16) {
-            DI()->response->setRet(201)->setMsg("用户名长度必须<=16");
+            DI()->response->setRet(201)->setMsg("用户帐号长度必须<=16");
             return "";
         }
 
+        //检查密码是否满足要求
         if(!isset($_POST['passwd'])) {
             DI()->response->setRet(201)->setMsg("密码不能为空");
             return "";
@@ -64,6 +85,34 @@ class Api_SignIn extends PhalApi_Api
             DI()->response->setRet(201)->setMsg("密码长度必须<=16");
             return "";
         }
+
+        //检查昵称是否满足要求
+        if(!isset($_POST['username'])) {
+            DI()->response->setRet(201)->setMsg("昵称不能为空");
+            return "";
+        }
+        $username = $_POST['username'];
+        if(strlen($username) < 4) {
+            DI()->response->setRet(201)->setMsg("昵称长度必须>=4");
+            return "";
+        }
+        if(strlen($username) > 32) {
+            DI()->response->setRet(201)->setMsg("昵称长度必须<=32");
+            return "";
+        }
+
+        //检查邀请码是否满足要求
+        if(!isset($_POST['signcode'])) {
+            DI()->response->setRet(201)->setMsg("邀请码不能为空");
+            return "";
+        }
+        $signcode = $_POST['signcode'];
+
+        if(!$this->checkSignCode($signcode)) {
+            DI()->response->setRet(201)->setMsg("邀请码错误，请联系管理员获取邀请码");
+            return "";
+        }
+
 
         $user = array();
         $user['account'] = $account;
@@ -92,7 +141,7 @@ class Api_SignIn extends PhalApi_Api
 
         $user_info = array();
 
-        $user_info['username'] = '小白';
+        $user_info['username'] = $username;
         $user_info['truename'] = '贵姓';
         $user_info['location'] = '保密';
         $user_info['birthday'] = date("Y/m/d");
@@ -114,9 +163,64 @@ class Api_SignIn extends PhalApi_Api
             return "";
         }
 
-        return $dmSignIn->signIn($user,$user_info);
+        if($dmSignIn->signIn($user,$user_info)) {
+            $this->setSignCode("\n//======");
+            return "注册成功，请登录";
+        } else {
+            return "注册失败，请联系管理员";
+        }
 
     }
+
+    /*
+     * 从文件中获取邀请码
+     */
+    private function getSignCode() {
+        $myfile = fopen(__DIR__."/signcode.php","r");
+        while($line = fgets($myfile)) {
+            $last = $line;
+        }
+        fclose($myfile);
+
+        return trim($last);
+    }
+
+    private function checkSignCode($signCode) {
+
+        $line = $this->getSignCode();
+
+        if(strcmp($line,"//======") == 0) {
+            return false;
+        }
+
+        $line = substr($line,2);
+        $code = explode(",",$line);
+        $oldTime = $code[0];
+        $oldCode = $code[1];
+
+        $diff = time() - $oldTime;
+        if($diff > (1 * 60 * 60)) { //邀请码一个小时失效
+            return false;
+        }
+
+        if(strcmp($oldCode,$signCode) == 0) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    /*
+     * 注册成功，清除邀请码，确保邀请码只使用一次
+     */
+    private function setSignCode($code) {
+        $myfile = fopen(__DIR__."/signcode.php","a");
+        fputs($myfile,$code);
+        fclose($myfile);
+    }
+
+
 
 
 }

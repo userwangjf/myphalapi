@@ -24,4 +24,8 @@ return array(
     'service_whitelist' => array(
         'Default.Index',
     ),
+
+    'upload_dir' => '/home/wangjf/web/myphalapi/Public/myweibo/uploads',
+    'upload_bak' => '',
+
 );

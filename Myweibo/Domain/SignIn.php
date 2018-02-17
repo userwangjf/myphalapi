@@ -33,7 +33,7 @@ class Domain_SignIn {
         //插入数据到user表
         $uid = $userModel->signIn($user);
         if(-1 == $uid) {
-            return "数据库失败";
+            return false;
         }
 
         //插入数据到user_info表
@@ -41,7 +41,7 @@ class Domain_SignIn {
         $infoModel = new Model_UserInfo();
         $infoModel->signIn($user_info);
 
-        return "注册成功，请登录";
+        return true;
     }
 
 

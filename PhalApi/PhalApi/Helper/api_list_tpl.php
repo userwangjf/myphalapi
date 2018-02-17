@@ -80,7 +80,7 @@ $table_color_arr = explode(" ", "red orange yellow olive teal blue violet purple
             } 
             ?>
                 <?php
-                $uri  = $env ? '' : str_ireplace('listAllApis.php', 'checkApiParams.php', $_SERVER['REQUEST_URI']);
+                $uri  = $env ? '' : str_ireplace('listApi.php', 'checkApi.php', $_SERVER['REQUEST_URI']);
                 $num2 = 0;
                 foreach ($allApiS as $key => $item) {
                     ?>

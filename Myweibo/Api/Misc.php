@@ -13,16 +13,32 @@ class Api_Misc extends PhalApi_Api
 
     public function getRules() {
         return array(
+            'diskFree' => array(
+
+            ),
             'regCode' => array(
 
             ),
             'getConnect' => array(
 
             ),
-            'getWeibo' => array(
-
-            ),
         );
+    }
+    /**
+     * @desc 获取磁盘的剩余空间
+     * @return int      goods_id    商品ID
+     * @return string   goods_name  商品名称
+     * @return int      goods_price 商品价格
+     * @return string   goods_image 商品图片
+     * @exception 406 签名失败
+     */
+    public function diskFree() {
+
+        //返回以字节为单位的剩余空间
+        $free = disk_free_space(".");
+        return "$free";
+        //$free = disk_free_space("/media/wangjf/WORK");
+        //return "$free";
     }
 
     /*
