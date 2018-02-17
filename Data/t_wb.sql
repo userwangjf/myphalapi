@@ -133,7 +133,8 @@ CREATE TABLE IF NOT EXISTS `t_picture` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `picture` varchar(128) NOT NULL DEFAULT '' COMMENT '微博配图的地址',
   `ctime` int(10) unsigned NOT NULL COMMENT '图片的原始创建时间',
-  `wid` int(10) unsigned NOT NULL COMMENT '所属微博id',
+  `wid` int(10) unsigned NOT NULL COMMENT '所属微博wid',
+  `md5` varchar(40) NOT NULL COMMENT '图片的md5值，用于文件完整性检查',
   PRIMARY KEY (`id`),
   KEY `wid` (`wid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='微博配图' AUTO_INCREMENT=1 ;
@@ -181,11 +182,11 @@ INSERT INTO `t_routes` (`id`, `slug`, `route`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `t_sessions` (
-  `session_id` varchar(40) NOT NULL DEFAULT '0',
-  `ip_address` varchar(45) NOT NULL DEFAULT '0',
+  `session_id` varchar(40) NOT NULL DEFAULT '0' COMMENT '计算用户的MD5',
+  `ip_address` varchar(40) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
-  `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
-  `user_data` text NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上次登录时间',
+  `user_data` text NOT NULL COMMENT '按json格式，存储用户的数据信息',
   PRIMARY KEY (`session_id`),
   KEY `last_activity_idx` (`last_activity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -248,15 +249,15 @@ INSERT INTO `t_user` (`id`, `account`, `passwd`, `regis_time`, `lock`, `vemail`)
 
 CREATE TABLE IF NOT EXISTS `t_user_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户昵称',
-  `truename` varchar(45) NOT NULL DEFAULT '' COMMENT '真实姓名',
-  `location` varchar(45) NOT NULL DEFAULT '' COMMENT '居住地',
+  `username` varchar(32) NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `truename` varchar(32) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  `location` varchar(64) NOT NULL DEFAULT '' COMMENT '居住地',
   `birthday` date NOT NULL COMMENT '生日(日期时间型)',
-  `sex` enum('男','女') NOT NULL DEFAULT '男' COMMENT '性别',
-  `intro` varchar(100) NOT NULL DEFAULT '' COMMENT '一句话介绍自己',
-  `avatar` varchar(60) NOT NULL DEFAULT '' COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
-  `domain` varchar(100) DEFAULT NULL COMMENT '个性域名',
-  `style` varchar(100) NOT NULL DEFAULT '' COMMENT '模板风格',
+  `sex` enum('男','女','未知') NOT NULL DEFAULT '男' COMMENT '性别',
+  `intro` varchar(128) NOT NULL DEFAULT '' COMMENT '一句话介绍自己',
+  `avatar` varchar(128) NOT NULL DEFAULT '' COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
+  `domain` varchar(128) DEFAULT NULL COMMENT '个性域名',
+  `style` varchar(64) NOT NULL DEFAULT '' COMMENT '模板风格',
   `follow` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
   `fans` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '粉丝数',
   `weibo` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发表微博数',
@@ -285,6 +286,7 @@ INSERT INTO `t_user_info` (`id`, `username`, `truename`, `location`, `birthday`,
 
 CREATE TABLE IF NOT EXISTS `t_weibo` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `wid` int(10) unsigned NOT NULL COMMENT '创建时间，用作多个表关联的id，避免表项时原id重复',
   `type` varchar(16) NOT NULL DEFAULT '公开' COMMENT '微博类别',
   `content` varchar(255) NOT NULL DEFAULT '' COMMENT '微博内容',
   `isturn` int(11) NOT NULL DEFAULT '0' COMMENT '是否转发(0原创，否则记录转发的ID)',
