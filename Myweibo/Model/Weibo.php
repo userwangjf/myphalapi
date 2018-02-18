@@ -19,8 +19,8 @@ class Model_Weibo extends PhalApi_Model_NotORM {
     public function getWeibo($id){
         $rs = $this->getORM()
             ->select('*')
-            ->where('id',$id)
-            ->order('id desc')
+            ->where('wid',$id)
+            ->order('wid desc')
             ->fetchAll();
 
         return $rs;
@@ -29,9 +29,9 @@ class Model_Weibo extends PhalApi_Model_NotORM {
     //获取最新发表的微搏ID列表
     public function getIdNew($page,$count) {
         $rs = $this->getORM()
-            ->select('id')
+            ->select('wid')
             ->limit($page*$count,$count)
-            ->order('id desc')
+            ->order('wid desc')
             ->fetchAll();
 
         return $rs;

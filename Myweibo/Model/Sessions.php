@@ -38,9 +38,22 @@ class Model_Sessions extends PhalApi_Model_NotORM
      * @return bool|int
      * @throws Exception
      */
-    public function delSession($uid) {
+    public function delSessionUid($uid) {
         $rs = $this->getORM()
             ->where('uid',$uid)
+            ->delete();
+
+        return $rs;
+    }
+
+    /**
+     * @param $session
+     * @return bool|int
+     * @throws Exception
+     */
+    public function delSession($session) {
+        $rs = $this->getORM()
+            ->where('session_id',$session)
             ->delete();
 
         return $rs;

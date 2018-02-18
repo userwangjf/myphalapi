@@ -25,7 +25,7 @@ class Domain_LoginIn {
         $user = $tblUser->loginIn($account,$passwd);
 
         if(count($user) == 0) {
-            DI()->response->setRet(201)->setMsg("无此用户");
+            DI()->response->setRet(201)->setMsg("无此用户，登录失败");
             return null;
         }
 
@@ -45,13 +45,14 @@ class Domain_LoginIn {
         $session['last_activity']   = time();
         $session['user_data']       = "";
         $session['session_id']      = md5($session['ip_address'].$session['last_activity']."$passwd");
+        $session['imsi']            = "";
 
         $mdSessions = new Model_Sessions();
         //先删除旧的session
-        $mdSessions->delSession($user[0]['id']);
+        $mdSessions->delSessionUid($user[0]['id']);
         $ret = $mdSessions->addSession($session);
         if($ret == null) {
-            DI()->response->setRet(201)->setMsg("登录数据库失败");;
+            DI()->response->setRet(220)->setMsg("登录数据库失败");
             return null;
         } else {
             return array('tokenid' => $session['session_id']);

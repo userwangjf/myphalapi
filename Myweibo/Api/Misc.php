@@ -19,6 +19,9 @@ class Api_Misc extends PhalApi_Api
             'getConnect' => array(
                 'userkey' => array('name' => 'userkey', 'desc' => '用户输入的参数'),
             ),
+            'checkIp' => array(
+                'clientip' => array('name' => 'clientip', 'desc' => '用户输入的IP'),
+            ),
 
         );
     }
@@ -35,7 +38,7 @@ class Api_Misc extends PhalApi_Api
         $ret = array();
 
         $ret['UPLOAD_DIR'] = 0;
-        $ret['UPLOAD_BAK'] = 0;
+        $ret['BACKUP_DIR'] = 0;
 
         $path = DI()->config->get('app.UPLOAD_DIR');
         if($path) {
@@ -45,11 +48,11 @@ class Api_Misc extends PhalApi_Api
             }
         }
 
-        $path = DI()->config->get('app.UPLOAD_BAK');
+        $path = DI()->config->get('app.BACKUP_DIR');
         if($path) {
             if(is_dir($path)) {
                 $free = disk_free_space($path);
-                $ret['UPLOAD_BAK'] = $free;
+                $ret['BACKUP_DIR'] = $free;
             }
         }
 
@@ -66,7 +69,7 @@ class Api_Misc extends PhalApi_Api
     public function getConnect() {
         if(!isset($_POST['userKey'])) {
             //返回错误信息
-            DI()->response->setRet(201)->setMsg("无正确的参数");
+            DI()->response->setRet(220)->setMsg("无正确的参数");
             return "";
         }
 
@@ -79,6 +82,26 @@ class Api_Misc extends PhalApi_Api
         $encode = join($byte);
 
         return $encode;
+    }
+
+    public function checkIp() {
+
+        if(!isset($_POST['clientip'])) {
+            DI()->response->setRet(220)->setMsg("请输入正确的ip");
+            return "";
+        }
+        $clientIP = $_POST['clientip'];
+
+        $dmMisc = new Domain_Misc();
+        if($dmMisc->checkIP($clientIP)) {
+            DI()->response->setRet(210)->setMsg("IP在同一个网段");
+            return "";
+        } else {
+            DI()->response->setRet(220)->setMsg("IP不在同一个网段");
+            return "";
+        }
+
+
     }
 
 

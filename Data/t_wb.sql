@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS `t_picture` (
   `picture` varchar(128) NOT NULL DEFAULT '' COMMENT '微博配图的地址',
   `ctime` int(10) unsigned NOT NULL COMMENT '图片的原始创建时间',
   `wid` int(10) unsigned NOT NULL COMMENT '所属微博wid',
+  `uid` int(10) unsigned NOT NULL COMMENT '所属用户的uid',
   `md5` varchar(40) NOT NULL COMMENT '图片的md5值，用于文件完整性检查',
   PRIMARY KEY (`id`),
   KEY `wid` (`wid`)
@@ -184,12 +185,13 @@ INSERT INTO `t_routes` (`id`, `slug`, `route`) VALUES
 CREATE TABLE IF NOT EXISTS `t_sessions` (
   `session_id` varchar(40) NOT NULL DEFAULT '0' COMMENT '计算用户的MD5',
   `uid` int(10) unsigned NOT NULL COMMENT '用户的id',
+  `imsi` varchar(32) NOT NULL COMMENT '用户的手机imsi',
   `ip_address` varchar(40) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上次登录时间',
   `user_data` text NOT NULL COMMENT '按json格式，存储用户的数据信息',
   PRIMARY KEY (`session_id`),
-  KEY `last_activity_idx` (`last_activity`),
+  KEY `last_activity` (`last_activity`),
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -220,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `t_skin` (
 
 --
 -- 表的结构 `t_user`
---
+-- 如果要合并user表，建议AUTO_INCREMENT=100配置为不同的
 
 CREATE TABLE IF NOT EXISTS `t_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -299,7 +301,8 @@ CREATE TABLE IF NOT EXISTS `t_weibo` (
   `comment` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '评论条数',
   `uid` int(10) unsigned NOT NULL COMMENT '所属用户id',
   PRIMARY KEY (`id`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `wid` (`wid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微博表' AUTO_INCREMENT=70 ;
 
 --

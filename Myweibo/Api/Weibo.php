@@ -13,23 +13,26 @@ define("URL_UPLOAD","http://192.168.1.101/phalapi/myweibo/uploads");
 class Api_Weibo extends PhalApi_Api
 {
 
-
     public function getRules() {
         return array(
             'addWeibo' => array(
-                'username' 	=> array('name' => 'username', 'default' => 'PHPer', ),
+                'username' 	=> array('name' => 'username'   , 'desc' => '用户名'),
+                'tokenid'   => array('name' => 'tokenid'    , 'desc' => 'tokenid'),
             ),
             'makeWeibo' => array(
-
+                'tokenid'   => array('name' => 'tokenid'    , 'desc' => '用户的tokenid'),
+                'weibo'     => array('name' => 'weibo'      , 'desc' => 'json格式的微博内容'),
+                'pics'      => array('name' => 'pics'       , 'desc' => 'json格式的上传文件信息'),
             ),
             'getWeibo' => array(
-                'page' 	=> array('name' => 'page', 'type' => 'int', 'min' => 0, 'max' => 10),
-                'count' => array('name' => 'count', 'type' => 'int', 'min' => 5, 'max' => 50),
+                'tokenid'   => array('name' => 'tokenid'    , 'desc' => '用户的tokenid'),
+                'page' 	    => array('name' => 'page'       , 'desc' => '起始页码'),
+                'count'     => array('name' => 'count'      , 'desc' => '获取条目'),
             ),
         );
     }
 
-    /*
+    /**
      * 从服务器获取新的微博
      *
      */
@@ -40,8 +43,11 @@ class Api_Weibo extends PhalApi_Api
         return $dm_weibo->getWeibo($this->page,$this->count);
     }
 
-    //使用json格式上传微博
-    //包括2个参数weibo/pics
+    /**
+     * 使用json格式上传微博
+     * 包括2个参数weibo/pics
+     * @return mixed|null|string
+     */
     public function makeWeibo() {
 
         $picture = null;
@@ -63,92 +69,41 @@ class Api_Weibo extends PhalApi_Api
         $weibo['collect'] = 0;
         $weibo['comment'] = 0;
         $weibo['uid'] = 0;
+        $weibo['wid'] = time();     //用作索引图片
         //return $weibo;
 
-        //如果没有图片，则开始更新数据库
-        if(!isset($_POST['pics'])) {
-            goto _make_weibo_db;
+        //处理上传的图片
+        $dmUpload = new Domain_Upload();
+        $picture = $dmUpload->uploadPic();
+        if($picture == null) {
+            return "";
         }
-
-        //按上传日期，准备上传目录
-        $stime = date("Y/m",time());
-        $uploadDir = sprintf('%s/Public/myweibo/uploads/%s/', API_ROOT,$stime);
-        //如果目录不存在，则创建
-        if(!is_dir($uploadDir)) {
-            $res = mkdir($uploadDir,0777,true);
-            if($res) {
-                chmod($uploadDir,0777);
-            } else {
-                //返回错误信息
-                DI()->response->setRet(201)->setMsg("创建上传目录失败");
-                return "";
-            }
-        }
-
-
-        if(!isset($_FILES['uploadfile']))
-            goto _make_weibo_db;
-
-        //拷贝文件到目标
-        $picFile = $_FILES['uploadfile'];
-        $picInfo = json_decode($_POST['pics'],true);
-        $picInfo = $picInfo['picInfos'];
-        //return $picInfo;
-
-        $picture = array();
-        for($i=0;$i<count($picFile['name']);$i++)
-        {
-            //获取图片的拍摄时间
-            if(isset($picInfo[$i]['ctime']))
-                $ctime = strtotime($picInfo[$i]['ctime']);
-            else
-            {
-                DI()->response->setRet(201)->setMsg("上传文件的ctime不完整: ".$i);
-                return "";
-            }
-
-            if($picFile['size'][$i] == 0)continue;
-
-            //获取源文件的扩展名
-            $extName = strrchr($picFile['name'][$i], '.');
-
-            //使用源文件名和当前时间计算新的文件名
-            $dstName = $ctime."-".substr(md5($picFile['name'][$i].time()),0,16);
-            $dstName = $dstName . $extName;
-
-            $srcPath = $picFile['tmp_name'][$i];
-            $dstPath = $uploadDir . $dstName;
-
-            if (move_uploaded_file($srcPath, $dstPath)) {
-                $urlPath = sprintf("%s/%s/%s",'uploads',$stime,$dstName);
-
-                array_push($picture,array('picture' => "$urlPath",'ctime' => $ctime));
-            } else {
-                //返回错误信息
-                DI()->response->setRet(201)->setMsg("拷贝文件失败");
-                return "";
-            }
-        }
-        //return array("weibo"=>$weibo,"pic"=>$picture);
-
-        _make_weibo_db:
 
         //将新的微博写入数据库，并获取微博ID
-        $dm_weibo = new Domain_Weibo();
+        $dmWeibo = new Domain_Weibo();
 
         //weibo和picture是分开的表项
-        $id = $dm_weibo->addWeibo($weibo,$picture);
+        $id = $dmWeibo->addWeibo($weibo,$picture);
 
         //返回完整的信息。
         $weibo['id'] = $id;
         if($picture == null) $picture = array();//返回空的数组
         $weibo['pic'] = $picture;
 
+        //创建微博后，检查磁盘空间
+        $free = $dmUpload->checkFree();
+        if($free != null) {
+            DI()->response->setRet(210)->setMsg($free);
+        }
+
         return $weibo;
 
     }
 
-
+    /**
+     * 使用参数方式上传微博
+     * @return array
+     */
     public function addWeibo()
     {
 

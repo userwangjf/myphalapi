@@ -15,10 +15,11 @@ class Domain_Weibo {
         $pictureModel = new Model_Picture();
 
         //先查找微搏的id
-        $id = $weiboModel->getIdNew($page,$count);
+        $wid = $weiboModel->getIdNew($page,$count);
+
         //然后使用id查询微搏和图片
-        $weibo = $weiboModel->getWeibo($id);
-        $pic = $pictureModel->getPicture($id);
+        $weibo = $weiboModel->getWeibo($wid);
+        $pic = $pictureModel->getPicture($wid);
 
         //将图片拼接到微博数组里
         for($i=0;$i<count($weibo);$i++)
@@ -27,7 +28,7 @@ class Domain_Weibo {
             for($j=0;$j<count($pic);$j++)
             {
                 //$weibo[$i]['pic'] = "";
-                if($pic[$j]['wid'] == $weibo[$i]['id'])
+                if($pic[$j]['wid'] == $weibo[$i]['wid'])
                 {
                     array_push($arr, array('url'=>$pic[$j]['picture'], 'ctime'=>$pic[$j]['ctime']));
                 }
@@ -55,9 +56,11 @@ class Domain_Weibo {
         if($picture != null) {
             $model = new Model_Picture();
             for($i=0;$i<count($picture);$i++) {
-                $pic['wid'] = $id;
+                $pic['wid']     = $weibo['wid'];
+                $pic['uid']     = $weibo['uid'];
                 $pic['picture'] = $picture[$i]['picture'];
-                $pic['ctime'] = $picture[$i]['ctime'];
+                $pic['ctime']   = $picture[$i]['ctime'];
+                $pic['md5']     = $picture[$i]['md5'];
                 $model->addPicture($pic);
             }
         }

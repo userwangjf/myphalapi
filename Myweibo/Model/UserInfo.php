@@ -34,7 +34,7 @@ class Model_UserInfo extends PhalApi_Model_NotORM {
         if($tbl->insert($user_info))
             return $tbl->insert_id();
         else
-            return -1;
+            return null;
     }
 
 

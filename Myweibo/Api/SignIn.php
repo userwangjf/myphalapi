@@ -53,50 +53,58 @@ user表
 `vemail` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '邮箱验证(0未验证，1已验证)',
  */
 
+        //检查IP地址是否在同一个网段
+        $dmMisc = new Domain_Misc();
+        $ret = $dmMisc->checkIp($_SERVER['REMOTE_ADDR']);
+        if($ret == false) {
+            DI()->response->setRet(220)->setMsg("IP地址错误");
+            return "";
+        }
+
         $dmSignIn = new Domain_SignIn();
 
         //检查帐号是否满足要求
         if(!isset($_POST['account'])) {
-            DI()->response->setRet(201)->setMsg("用户帐号不能为空");
+            DI()->response->setRet(220)->setMsg("用户帐号不能为空");
             return "";
         }
         $account = $_POST['account'];
         if(strlen($account) < 4) {
-            DI()->response->setRet(201)->setMsg("用户帐号长度必须>=4");
+            DI()->response->setRet(220)->setMsg("用户帐号长度必须>=4");
             return "";
         }
         if(strlen($account) > 16) {
-            DI()->response->setRet(201)->setMsg("用户帐号长度必须<=16");
+            DI()->response->setRet(220)->setMsg("用户帐号长度必须<=16");
             return "";
         }
 
         //检查密码是否满足要求
         if(!isset($_POST['passwd'])) {
-            DI()->response->setRet(201)->setMsg("密码不能为空");
+            DI()->response->setRet(220)->setMsg("密码不能为空");
             return "";
         }
         $passwd = $_POST['passwd'];
         if(strlen($passwd) < 6) {
-            DI()->response->setRet(201)->setMsg("密码长度必须>=6");
+            DI()->response->setRet(220)->setMsg("密码长度必须>=6");
             return "";
         }
         if(strlen($passwd) > 16) {
-            DI()->response->setRet(201)->setMsg("密码长度必须<=16");
+            DI()->response->setRet(220)->setMsg("密码长度必须<=16");
             return "";
         }
 
         //检查昵称是否满足要求
         if(!isset($_POST['username'])) {
-            DI()->response->setRet(201)->setMsg("昵称不能为空");
+            DI()->response->setRet(220)->setMsg("昵称不能为空");
             return "";
         }
         $username = $_POST['username'];
         if(strlen($username) < 4) {
-            DI()->response->setRet(201)->setMsg("昵称长度必须>=4");
+            DI()->response->setRet(220)->setMsg("昵称长度必须>=4");
             return "";
         }
         if(strlen($username) > 32) {
-            DI()->response->setRet(201)->setMsg("昵称长度必须<=32");
+            DI()->response->setRet(220)->setMsg("昵称长度必须<=32");
             return "";
         }
 
@@ -105,7 +113,7 @@ user表
 
             //检查邀请码是否满足要求
             if(!isset($_POST['signcode'])) {
-                DI()->response->setRet(201)->setMsg("邀请码不能为空");
+                DI()->response->setRet(220)->setMsg("邀请码不能为空");
                 return "";
             }
             $signcode = $_POST['signcode'];
@@ -160,16 +168,18 @@ user_info表
         //检查帐号是否重复
         $ret = $dmSignIn->checkRepeat($user['account'],$user_info['username']);
         if(strlen($ret) != 0) {
-            DI()->response->setRet(201)->setMsg("$ret");
+            DI()->response->setRet(220)->setMsg("$ret");
             return "";
         }
 
-        if($dmSignIn->signIn($user,$user_info)) {
+        $ret = $dmSignIn->signIn($user,$user_info);
+        if($ret != null) {
             //邀请码仅使用1次
             $this->setSignCode("\n//======");
-            return "注册成功，请登录";
+            return $ret;
         } else {
-            return "注册失败，请联系管理员";
+            DI()->response->setRet(220)->setMsg("注册失败，请联系管理员");
+            return "";
         }
 
     }
@@ -184,7 +194,7 @@ user_info表
         //检查权限
 
         if(!isset($_POST['tokenid'])) {
-            DI()->response->setRet(201)->setMsg("tokenid错误");
+            DI()->response->setRet(220)->setMsg("tokenid错误");
             return "";
         }
         $tokenid = $_POST['tokenid'];
@@ -193,7 +203,7 @@ user_info表
         $ret = $dmAdmin->isAdmin($tokenid);
 
         if(!($ret)) {
-            DI()->response->setRet(201)->setMsg("非管理员，无此权限");
+            DI()->response->setRet(220)->setMsg("非管理员，无此权限");
             return "";
         }
 
@@ -229,7 +239,7 @@ user_info表
         $line = $this->getSignCode();
 
         if(strcmp($line,"//======") == 0) {
-            DI()->response->setRet(201)->setMsg("请向管理员获取邀请码");
+            DI()->response->setRet(220)->setMsg("请向管理员获取邀请码");
             return false;
         }
 
@@ -241,14 +251,14 @@ user_info表
         if(strcmp($oldCode,$signCode) == 0) {
             $diff = time() - $oldTime;
             if($diff > (10 * 60)) { //邀请码10分钟失效
-                DI()->response->setRet(201)->setMsg("邀请码已失效");
+                DI()->response->setRet(220)->setMsg("邀请码已失效");
                 return false;
             } else {
                 return true;
             }
         }
 
-        DI()->response->setRet(201)->setMsg("邀请码错误");
+        DI()->response->setRet(220)->setMsg("邀请码错误");
         return false;
 
     }

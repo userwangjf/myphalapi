@@ -28,18 +28,22 @@ class Model_UserTbl extends PhalApi_Model_NotORM {
             return true;
     }
 
+    /**
+     * @param $user
+     * @return null|string
+     */
     public function signIn($user) {
         $t_user = $this->getORM();
         if($t_user->insert($user))
             return $t_user->insert_id();
         else
-            return -1;
+            return null;
     }
 
     public function loginIn($account,$passwd) {
         $rs = $this->getORM()
             ->select('id')
-            //->where('account',$account)
+            ->where('account',$account)
             ->where('passwd = ?',$passwd)
             ->fetchAll();
 

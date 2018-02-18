@@ -15,33 +15,46 @@ class Domain_SignIn {
         $userModel = new Model_UserTbl();
         $repeat = $userModel->checkRepeat($account);
 
-        if($repeat)
-            return "帐号重复";
+        if($repeat) {
+            DI()->response->setRet(210)->setMsg("帐号重复");
+            return "";
+        }
 
         $infoModel = new Model_UserInfo();
         $repeat = $infoModel->checkRepeat($username);
 
-        if($repeat)
-            return "昵称重复";
-
+        if($repeat) {
+            DI()->response->setRet(210)->setMsg("昵称重复");
+            return "";
+        }
     }
 
+    /**
+     * @param $user
+     * @param $user_info
+     * @return null|string 返回用户注册的uid
+     */
     public function signIn($user,$user_info) {
 
         $userModel = new Model_UserTbl();
 
         //插入数据到user表
         $uid = $userModel->signIn($user);
-        if(-1 == $uid) {
-            return false;
+        if(null == $uid) {
+            DI()->response->setRet(210)->setMsg("注册数据库失败");
+            return null;
         }
 
         //插入数据到user_info表
         $user_info['uid'] = $uid;
         $infoModel = new Model_UserInfo();
-        $infoModel->signIn($user_info);
+        $ret = $infoModel->signIn($user_info);
+        if($ret == null) {
+            DI()->response->setRet(210)->setMsg("注册数据库失败");
+            return null;
+        }
 
-        return true;
+        return array('uid' => $uid);
     }
 
     public function userSum() {
