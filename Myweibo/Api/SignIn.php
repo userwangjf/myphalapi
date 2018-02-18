@@ -111,7 +111,6 @@ user表
             $signcode = $_POST['signcode'];
 
             if(!$this->checkSignCode($signcode)) {
-                DI()->response->setRet(201)->setMsg("邀请码错误，请联系管理员获取邀请码");
                 return "";
             }
         }
@@ -200,6 +199,7 @@ user_info表
 
         //生成新的邀请码
         $randCode = "";
+        srand(time());
         for($i=0;$i<6;$i++) {
             $number = rand(0,9);
             $randCode = "$randCode"."$number";
@@ -229,6 +229,7 @@ user_info表
         $line = $this->getSignCode();
 
         if(strcmp($line,"//======") == 0) {
+            DI()->response->setRet(201)->setMsg("请向管理员获取邀请码");
             return false;
         }
 
@@ -237,15 +238,17 @@ user_info表
         $oldTime = $code[0];
         $oldCode = $code[1];
 
-        $diff = time() - $oldTime;
-        if($diff > (10 * 60)) { //邀请码10分钟失效
-            return false;
-        }
-
         if(strcmp($oldCode,$signCode) == 0) {
-            return true;
+            $diff = time() - $oldTime;
+            if($diff > (10 * 60)) { //邀请码10分钟失效
+                DI()->response->setRet(201)->setMsg("邀请码已失效");
+                return false;
+            } else {
+                return true;
+            }
         }
 
+        DI()->response->setRet(201)->setMsg("邀请码错误");
         return false;
 
     }

@@ -20,7 +20,7 @@ class Api_LoginIn extends PhalApi_Api {
     /**
      * 登录接口
      * @desc 登录接口，需要帐号/密码
-     * @param
+     * @param 帐号/密码
      * @return tokenid
      */
     public function loginIn() {
@@ -57,8 +57,11 @@ class Api_LoginIn extends PhalApi_Api {
 
         $dmLoginIn = new Domain_LoginIn();
         $ret = $dmLoginIn->loginIn($account,$passwd);
-
-        return $ret;
+        if($ret == null) {
+            return "";
+        } else {
+            return $ret;
+        }
     }
 
 

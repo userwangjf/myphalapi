@@ -39,8 +39,8 @@ class Model_UserTbl extends PhalApi_Model_NotORM {
     public function loginIn($account,$passwd) {
         $rs = $this->getORM()
             ->select('id')
-            ->where('account',$account)
-            ->where('passwd',$passwd)
+            //->where('account',$account)
+            ->where('passwd = ?',$passwd)
             ->fetchAll();
 
         return $rs;

@@ -89,9 +89,9 @@ CREATE TABLE IF NOT EXISTS `t_follow` (
 -- 转存表中的数据 `t_follow`
 --
 
-INSERT INTO `t_follow` (`follow`, `fans`, `time`, `source`, `gid`) VALUES
-(10000, 10005, 1392555157, 'search', 0),
-(10005, 10000, 1392555176, 'fans', 0);
+-- INSERT INTO `t_follow` (`follow`, `fans`, `time`, `source`, `gid`) VALUES
+-- (10000, 10005, 1392555157, 'search', 0),
+-- (10005, 10000, 1392555176, 'fans', 0);
 
 -- --------------------------------------------------------
 
@@ -197,9 +197,9 @@ CREATE TABLE IF NOT EXISTS `t_sessions` (
 -- 转存表中的数据 `t_sessions`
 --
 
-INSERT INTO `t_sessions` (`session_id`, `uid`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('228f506e70830d30b976c86931d72f32', 100, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392604448, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:4:{s:8:"template";s:1:"4";s:5:"style";s:5:"2.css";s:5:"cover";s:5:"8.jpg";s:4:"suit";s:1:"2";}s:8:"loggedin";b:1;}'),
-('df82ff6d000176efcd03b987d6bd2b56', 200, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392598136, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:1:{s:4:"suit";s:2:"12";}s:8:"loggedin";b:1;}');
+-- INSERT INTO `t_sessions` (`session_id`, `uid`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
+-- ('228f506e70830d30b976c86931d72f32', 100, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392604448, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:4:{s:8:"template";s:1:"4";s:5:"style";s:5:"2.css";s:5:"cover";s:5:"8.jpg";s:4:"suit";s:1:"2";}s:8:"loggedin";b:1;}'),
+-- ('df82ff6d000176efcd03b987d6bd2b56', 200, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.107 Safari/537.36', 1392598136, 'a:6:{s:9:"user_data";s:0:"";s:3:"uid";s:5:"10000";s:7:"account";s:16:"532499602@qq.com";s:8:"username";s:6:"runner";s:5:"style";a:1:{s:4:"suit";s:2:"12";}s:8:"loggedin";b:1;}');
 
 -- --------------------------------------------------------
 
