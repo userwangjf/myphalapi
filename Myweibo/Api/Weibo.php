@@ -88,9 +88,6 @@ class Api_Weibo extends PhalApi_Api
         //处理上传的图片
         $dmUpload = new Domain_Upload();
         $picture = $dmUpload->uploadPic();
-        if($picture == null) {
-            return "";
-        }
 
         //将新的微博写入数据库，并获取微博ID
         $dmWeibo = new Domain_Weibo();
@@ -100,7 +97,9 @@ class Api_Weibo extends PhalApi_Api
 
         //返回完整的信息。
         $weibo['id'] = $id;
-        if($picture == null) $picture = array();//返回空的数组
+        if($picture == null) {
+            $picture = array();
+        }//返回空的数组
         $weibo['pic'] = $picture;
 
         //创建微博后，检查磁盘空间

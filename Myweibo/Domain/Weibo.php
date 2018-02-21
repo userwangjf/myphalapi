@@ -61,6 +61,7 @@ class Domain_Weibo {
                 $pic['picture'] = $picture[$i]['picture'];
                 $pic['ctime']   = $picture[$i]['ctime'];
                 $pic['md5']     = $picture[$i]['md5'];
+                $pic['loc']     = 'default';
                 $model->addPicture($pic);
             }
         }

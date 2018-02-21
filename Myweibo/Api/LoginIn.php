@@ -30,7 +30,7 @@ class Api_LoginIn extends PhalApi_Api {
         $dmMisc = new Domain_Misc();
         $ret = $dmMisc->checkIp($_SERVER['REMOTE_ADDR']);
         if($ret == false) {
-            DI()->response->setRet(220)->setMsg("IP地址错误");
+            DI()->response->setRet(220)->setMsg("地址错误");
             return "";
         }
 
