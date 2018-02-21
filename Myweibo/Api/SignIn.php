@@ -176,6 +176,7 @@ user_info表
         if($ret != null) {
             //邀请码仅使用1次
             $this->setSignCode("\n//======");
+            DI()->response->setMsg("注册成功");
             return $ret;
         } else {
             DI()->response->setRet(220)->setMsg("注册失败，请联系管理员");
@@ -218,7 +219,8 @@ user_info表
         $signcode = "\n//".time().","."$randCode";
         $this->setSignCode($signcode);
 
-        return $randCode;
+        DI()->response->setMsg("邀请码生成成功");
+        return array('value' => "$randCode");
     }
 
     /*

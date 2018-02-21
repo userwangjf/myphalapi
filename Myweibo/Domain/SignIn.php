@@ -54,7 +54,7 @@ class Domain_SignIn {
             return null;
         }
 
-        return array('uid' => $uid);
+        return array('value' => $uid);
     }
 
     public function userSum() {

@@ -61,4 +61,20 @@ class Model_UserTbl extends PhalApi_Model_NotORM {
         return count($rs);
     }
 
+    /**
+     * @return int
+     */
+    public function userMinId() {
+        $rs = $this->getORM()
+            ->select('id')
+            ->order('id asc')
+            ->limit(0,1)
+            ->fetchAll();
+
+        if(count($rs) == 0)
+            return 0;
+        else
+            return $rs[0]['id'];
+    }
+
 }

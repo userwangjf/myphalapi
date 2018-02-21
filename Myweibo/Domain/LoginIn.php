@@ -25,9 +25,19 @@ class Domain_LoginIn {
         $user = $tblUser->loginIn($account,$passwd);
 
         if(count($user) == 0) {
-            DI()->response->setRet(201)->setMsg("无此用户，登录失败");
+            DI()->response->setRet(220)->setMsg("用户名或密码错误，登录失败");
             return null;
         }
+
+        $retData = array();
+
+        //检查是否是管理员
+        $minId = $tblUser->userMinId();
+        if($minId == $user[0]['id'])
+            $retData['admin'] = 1;
+        else
+            $retData['admin'] = 0;
+
 
         //写入session表
         /*
@@ -55,7 +65,8 @@ class Domain_LoginIn {
             DI()->response->setRet(220)->setMsg("登录数据库失败");
             return null;
         } else {
-            return array('tokenid' => $session['session_id']);
+            $retData['tokenid'] = $session['session_id'];
+            return $retData;
         }
 
     }

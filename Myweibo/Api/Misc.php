@@ -22,6 +22,9 @@ class Api_Misc extends PhalApi_Api
             'checkIp' => array(
                 'clientip' => array('name' => 'clientip', 'desc' => '用户输入的IP'),
             ),
+            'getTable' => array(
+
+            ),
 
         );
     }
@@ -102,6 +105,17 @@ class Api_Misc extends PhalApi_Api
         }
 
 
+    }
+
+    public function getTable() {
+
+        $arr = array();
+
+        $tblUser = new Model_UserTbl();
+        $ret = $tblUser->userMinId();
+        $arr['userMinId'] = $ret;
+
+        return $arr;
     }
 
 
