@@ -31,12 +31,14 @@ class Domain_LoginIn {
 
         $retData = array();
 
+        $retData['uid'] = $user[0]['id'];
+
         //检查是否是管理员
         $minId = $tblUser->userMinId();
         if($minId == $user[0]['id'])
-            $retData['admin'] = 1;
+            $retData['admin'] = "1";
         else
-            $retData['admin'] = 0;
+            $retData['admin'] = "0";
 
 
         //写入session表
@@ -70,4 +72,28 @@ class Domain_LoginIn {
         }
 
     }
+
+
+    /**
+     * 检查用户是否登录
+     * @param $session
+     * @param $uid
+     * @return bool
+     */
+    public function isLogin($session, $uid) {
+
+        $tblSession = new Model_Sessions();
+        $rs = $tblSession->getUid($session);
+
+        if(count($rs) == 0) {
+            return false;
+        } else if($uid == $rs[0]['uid']) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
 }

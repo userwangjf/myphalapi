@@ -13,7 +13,7 @@ class Domain_Upload {
 
         //检测是否有上传文件
         if(!isset($_FILES['uploadfile']))
-            return true;
+            return null;
 
         //读入上传目录配置
         $uploadDir = DI()->config->get('app.UPLOAD_DIR');
@@ -143,7 +143,7 @@ class Domain_Upload {
 
     /**
      * 生成磁盘空间的告警信息
-     * @return string
+     * @return null|string
      */
     public function checkFree() {
 
@@ -166,15 +166,17 @@ class Domain_Upload {
         //小于1GB，则返回告警信息
         if($upload < $backup) {
             if($upload < (1*1024*1024*1024)) {
-                return "警告：upload目录小于1GB";
+                $free = $upload/1024/1024;
+                return "警告：upload目录小于1GB("."$free"."MB)";
             }
         } else {
             if($backup < (1*1024*1024*1024)) {
-                return "警告：backup目录小于1GB";
+                $free = $backup/1024/1024;
+                return "警告：backup目录小于1GB("."$free"."MB)";
             }
         }
 
-        return "upload目录：".$upload;
+        return null;
     }
 
 }

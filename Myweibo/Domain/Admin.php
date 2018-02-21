@@ -13,6 +13,7 @@ class Domain_Admin {
      * 检查是否具有管理员权限
      * @desc 默认情况下，第一个注册的用户为管理员
      * @param $tokenid 用户标识符
+     * @return boolean
      */
     public function isAdmin($tokenid) {
 
@@ -23,8 +24,12 @@ class Domain_Admin {
             return false;
         }
 
-        //uid == 100的用户为管理员
-        if(strcmp($ret[0]['uid'],"100") != 0) {
+        //查找最小的id
+        $tblUser = new Model_UserTbl();
+        $minId = $tblUser->userMinId();
+
+        //最小的uid用户为管理员
+        if($ret[0]['uid'] != $minId) {
             return false;
         }
 

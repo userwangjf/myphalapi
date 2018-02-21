@@ -54,7 +54,7 @@ class Api_Weibo extends PhalApi_Api
         $weibo = null;
 
         if(!isset($_POST['weibo'])) {
-            DI()->response->setRet(202)->setMsg("未找到正确的微博");
+            DI()->response->setRet(210)->setMsg("数据错误");
             return "";
         }
 
@@ -68,9 +68,22 @@ class Api_Weibo extends PhalApi_Api
         $weibo['turn'] = 0;
         $weibo['collect'] = 0;
         $weibo['comment'] = 0;
-        $weibo['uid'] = 0;
+        //$weibo['uid'] = 0;
         $weibo['wid'] = time();     //用作索引图片
-        //return $weibo;
+        //return $weibo['uid'];
+
+        //检查用户的登录信息
+        if(!isset($_POST['tokenid'])) {
+            DI()->response->setRet(210)->setMsg("tokenid错误");
+            return "";
+        }
+        $tokenid = $_POST['tokenid'];
+
+        $dmLoginin = new Domain_LoginIn();
+        if(!$dmLoginin->isLogin($tokenid,$weibo['uid'])) {
+            DI()->response->setRet(210)->setMsg("用户未登录");
+            return "";
+        }
 
         //处理上传的图片
         $dmUpload = new Domain_Upload();
