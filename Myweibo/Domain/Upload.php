@@ -27,7 +27,7 @@ class Domain_Upload {
         if(!is_dir($uploadDir)) {
             $res = mkdir($uploadDir,0777,true);
             if($res) {
-                chmod($uploadDir,0777);
+                //chmod($uploadDir,0777);
             } else {
                 //返回错误信息
                 DI()->response->setRet(220)->setMsg("创建上传目录失败");
@@ -42,7 +42,7 @@ class Domain_Upload {
         if(!is_dir($uploadDir)) {
             $res = mkdir($uploadDir,0777,true);
             if($res) {
-                chmod($uploadDir,0777);
+                //chmod($uploadDir,0777);
             } else {
                 //返回错误信息
                 DI()->response->setRet(220)->setMsg("创建上传目录失败");
@@ -61,7 +61,7 @@ class Domain_Upload {
             if(!is_dir($backupDir)) {
                 $res = mkdir($backupDir,0777,true);
                 if($res) {
-                    chmod($backupDir,0777);
+                    //chmod($backupDir,0777);
                 } else {
                     //返回错误信息
                     DI()->response->setRet(220)->setMsg("创建备份目录失败"."$backupDir");
@@ -76,7 +76,7 @@ class Domain_Upload {
             if(!is_dir($backupDir)) {
                 $res = mkdir($backupDir,0777,true);
                 if($res) {
-                    chmod($backupDir,0777);
+                    //chmod($backupDir,0777);
                 } else {
                     //返回错误信息
                     DI()->response->setRet(220)->setMsg("创建备份目录失败"."$backupDir");

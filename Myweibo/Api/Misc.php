@@ -25,6 +25,9 @@ class Api_Misc extends PhalApi_Api
             'getTable' => array(
 
             ),
+            'testDir' => array(
+
+            ),
 
         );
     }
@@ -70,13 +73,13 @@ class Api_Misc extends PhalApi_Api
      * @return 转换为byte后，每个byte全部加1，然后返回
      */
     public function getConnect() {
-        if(!isset($_POST['userKey'])) {
+        if(!isset($_POST['userkey'])) {
             //返回错误信息
             DI()->response->setRet(220)->setMsg("无正确的参数");
             return "";
         }
 
-        $userKey = $_POST['userKey'];
+        $userKey = $_POST['userkey'];
         //转换为byte数组
         $byte = str_split($userKey);
         for($i=0;$i<count($byte);$i++) {
@@ -116,6 +119,45 @@ class Api_Misc extends PhalApi_Api
         $arr['userMinId'] = $ret;
 
         return $arr;
+    }
+
+    public function testDir() {
+
+        $stime = time();
+        //读入备份目录配置
+        $backupDir = DI()->config->get('app.BACKUP_DIR');
+        if(is_dir($backupDir)) {
+
+            //创建根目录
+            $backupDir = sprintf('%s/uploads', $backupDir);
+            if(!is_dir($backupDir)) {
+                $res = mkdir($backupDir,0777,true);
+                if($res) {
+                    //chmod($backupDir,0777);
+                } else {
+                    //返回错误信息
+                    DI()->response->setRet(220)->setMsg("创建备份目录失败"."$backupDir");
+                    return null;
+                }
+            }
+
+            //按日期创建目录，每月一个，和upload的日期一致
+            //$stime = date("Y/m",time());
+            $backupDir = sprintf('%s/%s/', $backupDir, $stime);
+            //如果目录不存在，则创建
+            if(!is_dir($backupDir)) {
+                $res = mkdir($backupDir,0777,true);
+                if($res) {
+                    //chmod($backupDir,0777);
+                } else {
+                    //返回错误信息
+                    DI()->response->setRet(220)->setMsg("创建备份目录失败"."$backupDir");
+                    return null;
+                }
+            }
+        }
+
+        return "$stime";
     }
 
 

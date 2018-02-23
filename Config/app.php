@@ -26,7 +26,7 @@ return array(
     ),
 
     //'UPLOAD_DIR' => '/storage/sdcard1/myphalapi/Public/myweibo',
-    //'UPLOAD_BAK' => '/storage/sdcard0/myweibo',
+    //'BACKUP_DIR' => '/storage/emulated/0/myweibo',
     'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',
     'BACKUP_DIR' => '/home/wangjf/backup',
 
