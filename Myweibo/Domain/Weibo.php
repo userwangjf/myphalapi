@@ -21,6 +21,13 @@ class Domain_Weibo {
         $weibo = $weiboModel->getWeibo($wid);
         $pic = $pictureModel->getPicture($wid);
 
+        //查找微博用户的昵称
+        $tblUserInfo = new Model_UserInfo();
+        for($i=0;$i<count($weibo);$i++) {
+            $username = $tblUserInfo->getUsername($weibo[$i]['uid']);
+            $weibo[$i]['username'] = $username;
+        }
+
         //将图片拼接到微博数组里
         for($i=0;$i<count($weibo);$i++)
         {

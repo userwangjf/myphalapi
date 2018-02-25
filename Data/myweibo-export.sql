@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `t_atme` (
-`id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `wid` int(10) unsigned NOT NULL COMMENT '提到我的微博id',
   `uid` int(10) unsigned NOT NULL COMMENT '所属用户id'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='at表' AUTO_INCREMENT=1 ;
@@ -107,12 +107,12 @@ CREATE TABLE IF NOT EXISTS `t_letter` (
 
 CREATE TABLE IF NOT EXISTS `t_picture` (
 `id` int(11) NOT NULL,
-  `picture` varchar(128) NOT NULL DEFAULT '' COMMENT '微博配图的地址',
+  `picture` varchar(64) NOT NULL DEFAULT '' COMMENT '微博配图的地址',
   `ctime` int(10) unsigned NOT NULL COMMENT '图片的原始创建时间',
   `wid` int(10) unsigned NOT NULL COMMENT '所属微博wid',
   `uid` int(10) unsigned NOT NULL COMMENT '所属用户的uid',
   `md5` varchar(40) NOT NULL COMMENT '图片的md5值，用于文件完整性检查',
-  `loc` varchar(128) NOT NULL DEFAULT 'default' COMMENT '图片主存储位置，用于扩展'
+  `loc` varchar(64) NOT NULL DEFAULT 'default' COMMENT '图片主存储位置，用于扩展'
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微博配图' AUTO_INCREMENT=5 ;
 
 --
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `t_skin` (
 --
 
 CREATE TABLE IF NOT EXISTS `t_user` (
-`id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `account` char(20) NOT NULL DEFAULT '' COMMENT '用户帐号',
   `passwd` char(128) NOT NULL DEFAULT '' COMMENT '用户密码',
   `regis_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '注册时间',

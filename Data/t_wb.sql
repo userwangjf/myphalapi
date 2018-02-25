@@ -1,3 +1,4 @@
+/*
 -- phpMyAdmin SQL Dump
 -- version 3.4.10.1deb1
 -- http://www.phpmyadmin.net
@@ -6,6 +7,7 @@
 -- 生成日期: 2014 年 02 月 17 日 10:39
 -- 服务器版本: 5.5.35
 -- PHP 版本: 5.3.10-1ubuntu3.9
+*/
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -136,9 +138,10 @@ CREATE TABLE IF NOT EXISTS `t_picture` (
   `wid` int(10) unsigned NOT NULL COMMENT '所属微博wid',
   `uid` int(10) unsigned NOT NULL COMMENT '所属用户的uid',
   `md5` varchar(40) NOT NULL COMMENT '图片的md5值，用于文件完整性检查',
-  `loc` varchar(128) NOT NULL DEFAULT 'default' COMMENT '图片主存储位置，用于扩展',
+  `loc` varchar(64) NOT NULL DEFAULT 'default' COMMENT '图片主存储位置，用于扩展',
   PRIMARY KEY (`id`),
-  KEY `wid` (`wid`)
+  KEY `wid` (`wid`),
+  KEY `uid` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='微博配图' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------

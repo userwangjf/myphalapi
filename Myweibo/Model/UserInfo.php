@@ -37,5 +37,18 @@ class Model_UserInfo extends PhalApi_Model_NotORM {
             return null;
     }
 
+    /**
+     * @param $uid
+     * @return mixed
+     */
+    public function getUsername($uid) {
+        $rs = $this->getORM()
+            ->select('username')
+            ->where('id',$uid)
+            ->fetchAll();
+
+        return $rs[0]['username'];
+    }
+
 
 }
