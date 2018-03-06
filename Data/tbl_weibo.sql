@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS `t_collect` (
   `wid` INT(10) UNSIGNED NOT NULL COMMENT '收藏微博的id',
   PRIMARY KEY (`id`),
   KEY `wid` (`wid`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='收藏表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -64,7 +65,8 @@ CREATE TABLE IF NOT EXISTS `t_comment` (
   `wid` INT(10) UNSIGNED NOT NULL COMMENT '所属微博id',
   PRIMARY KEY (`id`),
   KEY `wid` (`wid`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -80,7 +82,8 @@ CREATE TABLE IF NOT EXISTS `t_follow` (
   `gid` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属分组id',
   KEY `follow` (`follow`),
   KEY `fans` (`fans`),
-  KEY `gid` (`gid`)
+  KEY `gid` (`gid`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关注和粉丝表';
 
 -- --------------------------------------------------------
@@ -141,7 +144,8 @@ CREATE TABLE IF NOT EXISTS `t_praise` (
   `wid` INT(10) UNSIGNED NOT NULL COMMENT '被赞的微博id',
   PRIMARY KEY (`id`),
   KEY `wid` (`wid`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `time` (`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='赞表' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -212,19 +216,18 @@ CREATE TABLE IF NOT EXISTS `t_user` (
 
 CREATE TABLE IF NOT EXISTS `t_user_info` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '用户昵称',
-  `truename` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '真实姓名',
-  `location` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '居住地',
-  `birthday` date NOT NULL COMMENT '生日(日期时间型)',
-  `sex` enum('男','女','未知') NOT NULL DEFAULT '男' COMMENT '性别',
-  `INTro` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '一句话介绍自己',
-  `avatar` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
-  `domain` VARCHAR(128) DEFAULT NULL COMMENT '个性域名',
-  `style` VARCHAR(64) NOT NULL DEFAULT '' COMMENT '模板风格',
   `follow` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注数',
   `fans` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '粉丝数',
   `weibo` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '发表微博数',
   `uid` INT(10) UNSIGNED NOT NULL COMMENT 'user表的id',
+  `username` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `truename` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '真实姓名',
+  `location` VARCHAR(63) NOT NULL DEFAULT '' COMMENT '居住地',
+  `birthday` date NOT NULL COMMENT '生日(日期时间型)',
+  `sex` enum('男','女','未知') NOT NULL DEFAULT '男' COMMENT '性别',
+  `intro` VARCHAR(127) DEFAULT NULL COMMENT '一句话介绍自己',
+  `avatar` VARCHAR(127) DEFAULT NULL COMMENT '头像(有180，50,30三个，图片名字相同，路径不同)',
+  `extinfo` VARCHAR(255) DEFAULT NULL COMMENT '扩展信息',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `uid` (`uid`)
@@ -248,7 +251,9 @@ CREATE TABLE IF NOT EXISTS `t_weibo` (
   `type` VARCHAR(16) NOT NULL DEFAULT '公开' COMMENT '微博类别',
   `content` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '微博内容',
   PRIMARY KEY (`id`),
-  KEY `uid` (`uid`)
+  KEY `uid` (`uid`),
+  KEY `time` (`time`),
+  KEY `prise` (`praise`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='微博表' AUTO_INCREMENT=100 ;
 
 -- --------------------------------------------------------
@@ -263,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `t_weibo` (
 CREATE TABLE IF NOT EXISTS `t_img_favorites` (
   `uid` INT(10) UNSIGNED NOT NULL DEFAULT '0',
   `image_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `time` INT(10) UNSIGNED NOT NULL COMMENT '本记录创建时间',
   PRIMARY KEY (`uid`, `image_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='收藏表';
 
@@ -275,8 +281,9 @@ CREATE TABLE IF NOT EXISTS `t_img_category` (
   `id` INT(10) UNSIGNED NOT NULL COMMENT 'id',
   `uid` INT(10) UNSIGNED NOT NULL COMMENT 'uid',
   `level` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '层级，最顶层为0',
-  `parent` INT(10) UNSIGNED DEFAULT NULL COMMENT '父类型',
+  `parent` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '父id',
   `time` INT(10) UNSIGNED NOT NULL COMMENT '本记录创建时间',
+  `activity` INT(10) UNSIGNED NOT NULL COMMENT '上次使用的时间，用来分类图片',
   `status` enum('public','private') NOT NULL DEFAULT 'public' COMMENT '公共/私有',
   `visible` enum('true','false') NOT NULL DEFAULT 'true' COMMENT '是否可见,是否删除',
   `name` VARCHAR(127) NOT NULL DEFAULT '' COMMENT '分类名称',
@@ -306,7 +313,9 @@ CREATE TABLE IF NOT EXISTS `t_image_uid` (
 
 CREATE TABLE IF NOT EXISTS `t_images` (
   `id` INT(10) UNSIGNED NOT NULL COMMENT '图片id',
-  `filesize` INT(10) UNSIGNED DEFAULT NULL,
+  `uid` INT(10) UNSIGNED NOT NULL COMMENT '创建人',
+  `wid` INT(10) UNSINGED NOT NULL DEFAULT '0' COMMENT '关联的微搏id，没有则记录0',
+  `filesize` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '文件字节大小',
   `width` INT(10) UNSIGNED DEFAULT NULL COMMENT '原始图片宽度',
   `height` INT(10) UNSIGNED DEFAULT NULL COMMENT '原始图片高度',
   `twidth` INT(10) UNSIGNED DEFAULT NULL COMMENT '缩略图宽度',
@@ -315,12 +324,16 @@ CREATE TABLE IF NOT EXISTS `t_images` (
   `time` INT(10) UNSIGNED NOT NULL COMMENT '记录创建时间',
   `visible` enum('true','false') NOT NULL DEFAULT 'true' COMMENT '是否可见,是否删除',
   `md5sum` CHAR(32) DEFAULT NULL COMMENT '图片唯一性检查',
-  `url` VARCHAR(63) DEFAULT NULL COMMENT '原图的路径',
+  `save` VARCHAR(63) DEFAULT NULL COMMENT '原图的路径',
   `thumb` VARCHAR(63) DEFAULT NULL COMMENT '缩略图的路径',
-  `postion` VARCHAR(63) DEFAULT NULL COMMENT '本地存储位置',
+  `postion` VARCHAR(63) DEFAULT NULL COMMENT '拍摄地址',
+  `expand` VARCHAR(63) DEFAULT NULL COMMENT '存储扩展位置',
   `extension` VARCHAR(255) DEFAULT NULL COMMENT '扩展信息',
   PRIMARY KEY (`id`),
-  KEY `ctime` (`ctime`)
+  KEY `ctime` (`ctime`),
+  KEY `time` (`time`),
+  KEY `wid` (`wid`),
+  KEY `uid` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图片表' AUTO_INCREMENT=1;
 
 -- --------------------------------------------------------
@@ -331,6 +344,8 @@ CREATE TABLE IF NOT EXISTS `t_images` (
 CREATE TABLE IF NOT EXISTS `t_image_category` (
   `image_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
   `category_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `uid` INT(10) UNSIGNED NOT NULL COMMENT '创建人',
+  `time` INT(10) UNSIGNED NOT NULL COMMENT '创建或修改时间',
   PRIMARY KEY (`image_id`,`category_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='目录绑定表';
 
@@ -342,6 +357,8 @@ CREATE TABLE IF NOT EXISTS `t_image_category` (
 CREATE TABLE IF NOT EXISTS `t_image_tag` (
   `image_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
   `tag_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
+  `uid` INT(10) UNSIGNED NOT NULL COMMENT '创建人',
+  `time` INT(10) UNSIGNED NOT NULL COMMENT '创建或修改时间',
   PRIMARY KEY (`image_id`,`tag_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='标签绑定表';
 
@@ -352,6 +369,7 @@ CREATE TABLE IF NOT EXISTS `t_image_tag` (
 
 CREATE TABLE IF NOT EXISTS `t_img_tags` (
   `id` INT(10) UNSIGNED NOT NULL COMMENT 'tag的编号',
+  `uid` INT(10) UNSIGNED NOT NULL COMMENT '创建人',
   `parent` INT(10) UNSIGNED NOT NULL COMMENT '父类别，支持分类',
   `time` INT(10) UNSIGNED NOT NULL COMMENT '创建或修改时间',
   `activity` INT(10) UNSIGNED NOT NULL COMMENT '上次使用的时间',
@@ -369,7 +387,22 @@ CREATE TABLE IF NOT EXISTS `t_img_comments` (
   `id` INT(10) UNSIGNED NOT NULL COMMENT '评论id',
   `image_id` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '评论的图片id',
   `time` INT(10) UNSIGNED NOT NULL COMMENT '评论的日期',
-  `author_id` INT(10) UNSIGNED DEFAULT NULL COMMENT '作者id',
+  `uid` INT(10) UNSIGNED DEFAULT NULL COMMENT '作者id',
+  `visible` enum('true','false') NOT NULL DEFAULT 'false' COMMENT '是否可见',
+  `author` VARCHAR(64) DEFAULT NULL COMMENT '作者名字',
+  `content` text COMMENT '评论内容',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论表' AUTO_INCREMENT=1;
+
+-- --------------------------------------------------------
+--
+-- 足迹表
+--
+
+CREATE TABLE IF NOT EXISTS `t_footprint` (
+  `id` INT(10) UNSIGNED NOT NULL COMMENT '评论id',
+  `time` INT(10) UNSIGNED NOT NULL COMMENT '评论的日期',
+  `uid` INT(10) UNSIGNED DEFAULT NULL COMMENT '作者id',
   `visible` enum('true','false') NOT NULL DEFAULT 'false' COMMENT '是否可见',
   `author` VARCHAR(64) DEFAULT NULL COMMENT '作者名字',
   `content` text COMMENT '评论内容',
