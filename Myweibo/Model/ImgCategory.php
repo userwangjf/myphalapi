@@ -7,13 +7,18 @@
  */
 
 
-class Model_UserTbl extends PhalApi_Model_NotORM
+class Model_ImgCategory extends PhalApi_Model_NotORM
 {
 
     public function getTableName($id)
     {
         return "img_category";
     }
+
+    public function getChildCategory($parent) {
+
+    }
+
 
 
 }

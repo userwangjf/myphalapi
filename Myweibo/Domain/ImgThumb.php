@@ -6,7 +6,7 @@
  * Time: 下午6:59
  */
 
-Class Domain_Image {
+Class Domain_ImgThumb {
 
     /**
      * description: 图像等比例压缩

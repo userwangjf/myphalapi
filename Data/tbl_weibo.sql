@@ -115,22 +115,17 @@ CREATE TABLE IF NOT EXISTS `t_letter` (
 
 -- --------------------------------------------------------
 --
--- 表的结构 `t_picture`
+-- 微博和图片的绑定表 `t_picture`
 --
 
--- CREATE TABLE IF NOT EXISTS `t_picture` (
---   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
---   `picture` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '微博配图的地址',
---   `visible` enum('true','false') NOT NULL DEFAULT 'true' COMMENT '是否可见,用作删除',
---   `ctime` INT(10) UNSIGNED NOT NULL COMMENT '图片的原始创建时间',
---   `wid` INT(10) UNSIGNED NOT NULL COMMENT '所属微博wid',
---   `uid` INT(10) UNSIGNED NOT NULL COMMENT '所属用户的uid',
---   `md5` VARCHAR(40) NOT NULL COMMENT '图片的md5值，用于文件完整性检查',
---   `loc` VARCHAR(64) NOT NULL DEFAULT 'default' COMMENT '图片存储位置，用于扩展',
---   PRIMARY KEY (`id`),
---   KEY `wid` (`wid`),
---   KEY `uid` (`uid`)
--- ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='微博配图' AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `t_picture` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `image_id` INT(10) UNSIGNED NOT NULL COMMENT '图片的id',
+  `wid` INT(10) UNSIGNED NOT NULL '微博的id',
+  PRIMARY KEY (`id`),
+  KEY `wid` (`wid`),
+  KEY `image_id` (`image_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='微博配图' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 --
@@ -314,7 +309,6 @@ CREATE TABLE IF NOT EXISTS `t_image_uid` (
 CREATE TABLE IF NOT EXISTS `t_images` (
   `id` INT(10) UNSIGNED NOT NULL COMMENT '图片id',
   `uid` INT(10) UNSIGNED NOT NULL COMMENT '创建人',
-  `wid` INT(10) UNSINGED NOT NULL DEFAULT '0' COMMENT '关联的微搏id，没有则记录0',
   `filesize` INT(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT '文件字节大小',
   `width` INT(10) UNSIGNED DEFAULT NULL COMMENT '原始图片宽度',
   `height` INT(10) UNSIGNED DEFAULT NULL COMMENT '原始图片高度',
@@ -332,7 +326,6 @@ CREATE TABLE IF NOT EXISTS `t_images` (
   PRIMARY KEY (`id`),
   KEY `ctime` (`ctime`),
   KEY `time` (`time`),
-  KEY `wid` (`wid`),
   KEY `uid` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='图片表' AUTO_INCREMENT=1;
 
