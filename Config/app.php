@@ -25,9 +25,14 @@ return array(
         'Default.Index',
     ),
 
-    'UPLOAD_DIR' => '/storage/sdcard1/myphalapi/Public/myweibo',
-    'BACKUP_DIR' => '/storage/emulated/0/myweibo',
-    //'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',
-    //'BACKUP_DIR' => '/home/wangjf/backup',
+
+    //'THUMB_DIR' => '/storage/sdcard1/myphalapi/Public/myweibo',  //缩略图路径
+    //'UPLOAD_DIR' => '/storage/sdcard1/myphalapi/Public/myweibo', //原图存储路径
+    //'BACKUP_DIR' => '/storage/emulated/0/myweibo',               //原图备份路径
+
+
+    'THUMB_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',  //缩略图路径
+    'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图存储路径
+    'BACKUP_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo/backup', //原图备份路径
 
 );
