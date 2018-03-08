@@ -6,13 +6,16 @@
  * Time: 下午8:02
  */
 
-class Domain_AddManual {
+class Domain_Build {
 
-    public function addManual() {
-        $src_path = "";
+    private $total = 0;
 
-        moveFile($src_path);
-
+    //搜索原始目录的图片，建立数据库
+    public function addManual($src_path) {
+        $src_path = "/home/wangjf/backup/camera";
+        $this->total = 0;
+        $this->total = scanDir($src_path);
+        return $this->total;
     }
 
     private function moveFile($srcFile) {
@@ -68,12 +71,9 @@ class Domain_AddManual {
                 if($file != ".." && $file != ".") {
                     //如果是子文件夹，就进行递归
                     if(is_dir($dir."/".$file)) {
-                        scanDir($dir."/".$file);
+                        $this->total += scanDir($dir."/".$file);
                     } else {
 
-                        if(null == moveFile($file)) {
-
-                        }
                     }
 
                 }

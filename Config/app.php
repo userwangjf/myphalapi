@@ -33,6 +33,6 @@ return array(
 
     'THUMB_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',  //缩略图路径
     'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图存储路径
-    'BACKUP_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo/backup', //原图备份路径
+    'BACKUP_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图备份路径
 
 );

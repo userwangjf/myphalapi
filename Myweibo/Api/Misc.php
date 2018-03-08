@@ -28,6 +28,9 @@ class Api_Misc extends PhalApi_Api
             'testDir' => array(
 
             ),
+            'buildtable' => array(
+                'srcpath' => array('name' => 'srcpath', 'desc' => '原始目录'),
+            ),
 
         );
     }
@@ -158,6 +161,13 @@ class Api_Misc extends PhalApi_Api
         }
 
         return "$stime";
+    }
+
+    public function buildtable() {
+
+        $dm_build = new Domain_Build();
+        return $dm_build->buildData("aa");
+
     }
 
 

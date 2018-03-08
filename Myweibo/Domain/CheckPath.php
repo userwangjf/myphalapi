@@ -50,7 +50,7 @@ class Domain_CheckPath {
 
         //按日期创建目录，每月一个
         $stime = date("Y-m",$time);
-        $top = sprintf('%s/%s/', $top, $stime);
+        $top = sprintf('%s/%s', $top, $stime);
         //如果目录不存在，则创建
         if(!is_dir($top)) {
             $res = mkdir($top,0777,true);
@@ -67,14 +67,14 @@ class Domain_CheckPath {
     }
 
     public function checkThumb($time) {
-        return checkDir('thumb',$time);
+        return $this->checkDir('thumb',$time);
     }
 
     public function checkUpload($time) {
-        return checkDir('upload',$time);
+        return $this->checkDir('upload',$time);
     }
 
     public function checkBackup($time) {
-        return checkDir('backup',$time);
+        return $this->checkDir('backup',$time);
     }
 }
