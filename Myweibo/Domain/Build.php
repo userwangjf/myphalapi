@@ -11,8 +11,16 @@ class Domain_Build {
     private $total = 0;
 
     //搜索原始目录的图片，建立数据库
-    public function addManual($src_path) {
+    public function buildData($src_path) {
 
+        for(;;) {
+            sleep(1);
+            $myfile = fopen(__DIR__."/lock.build","a");
+            fputs($myfile,"lock");
+            fclose($myfile);
+        }
+
+        return;
 
         $myfile = fopen(__DIR__."/lock.build","a");
         fputs($myfile,"lock");
@@ -55,13 +63,15 @@ class Domain_Build {
             return null;
         }
 
-
         //创建缩略图
         $dst_path = $checkDir->checkThumb($src_time);
         if($dst_path == null) return null;
         $dst_path = $dst_path.'/'.$dst_name;
         $imgThumbs = new Domain_ImgThumb();
         $imgThumbs->resizeImage($srcFile,$dst_path,1080,1080);
+
+        $imgThumbs = null;
+        $checkDir = null;
 
         return "";
 

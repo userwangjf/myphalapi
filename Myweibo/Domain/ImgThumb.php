@@ -58,6 +58,7 @@ Class Domain_ImgThumb {
             } else {
                 $res = imagejpeg($im, !empty($out_path) ? $out_path : $path);
             }
+            $new_im = null;
             return $res;
         } catch (\Exception $e) {
             return false;
