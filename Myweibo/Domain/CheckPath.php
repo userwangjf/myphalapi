@@ -67,14 +67,14 @@ class Domain_CheckPath {
     }
 
     public function checkThumb($time) {
-        return $this->checkDir('thumb',$time);
+        return $this->checkDir('thumbs',$time);
     }
 
     public function checkUpload($time) {
-        return $this->checkDir('upload',$time);
+        return $this->checkDir('uploads',$time);
     }
 
     public function checkBackup($time) {
-        return $this->checkDir('backup',$time);
+        return $this->checkDir('backups',$time);
     }
 }

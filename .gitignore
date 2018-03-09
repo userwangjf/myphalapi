@@ -6,6 +6,8 @@
 .buildpath
 .project
 uploads/
+thumbs/
+backups/
 
 # 日记文件
 *.log
