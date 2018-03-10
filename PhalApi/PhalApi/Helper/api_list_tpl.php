@@ -7,9 +7,9 @@ $table_color_arr = explode(" ", "red orange yellow olive teal blue violet purple
 <head>
     <meta charset="utf-8">
     <title><?php echo $apiDirName; ?> - 在线接口列表 - <?php echo $projectName; ?></title>
-    <link href="semantic.min.css" rel="stylesheet">
-    <script src="jquery.min.js"></script>
-    <script src="semantic.min.js"></script>
+    <link href="js/semantic.min.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/semantic.min.js"></script>
     <meta name="robots" content="none"/>
 </head>
 <body>

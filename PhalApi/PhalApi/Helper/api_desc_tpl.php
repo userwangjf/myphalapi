@@ -6,12 +6,12 @@ echo <<<EOT
     <meta charset="utf-8">
     <title>{$service} - 在线接口文档 - {$projectName}</title>
 
-    <link rel="stylesheet" href="https://staticfile.qnssl.com/semantic-ui/2.1.6/semantic.min.css">
-    <link rel="stylesheet" href="https://staticfile.qnssl.com/semantic-ui/2.1.6/components/table.min.css">
-    <link rel="stylesheet" href="https://staticfile.qnssl.com/semantic-ui/2.1.6/components/container.min.css">
-    <link rel="stylesheet" href="https://staticfile.qnssl.com/semantic-ui/2.1.6/components/message.min.css">
-    <link rel="stylesheet" href="https://staticfile.qnssl.com/semantic-ui/2.1.6/components/label.min.css">
-    <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="js2/semantic.min.css">
+    <link rel="stylesheet" href="js2/table.min.css">
+    <link rel="stylesheet" href="js2/container.min.css">
+    <link rel="stylesheet" href="js2/message.min.css">
+    <link rel="stylesheet" href="js2/label.min.css">
+    <script src="js2/jquery.min.js"></script>
 </head>
 
 <body>

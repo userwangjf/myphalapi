@@ -13,10 +13,12 @@ class Domain_Build {
     //搜索原始目录的图片，建立数据库
     public function buildData($src_path) {
 
+        $counter = 0;
         for(;;) {
             sleep(1);
             $myfile = fopen(__DIR__."/lock.build","a");
-            fputs($myfile,"lock");
+            fputs($myfile,"$counter\n");
+            $counter++;
             fclose($myfile);
         }
 
