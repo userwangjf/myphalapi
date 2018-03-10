@@ -31,8 +31,8 @@ return array(
     //'BACKUP_DIR' => '/storage/emulated/0/myweibo',               //原图备份路径
 
 
-    'THUMB_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',  //缩略图路径
-    'UPLOAD_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图存储路径
-    'BACKUP_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图备份路径
+    'THUMBS_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo',  //缩略图路径
+    'UPLOADS_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图存储路径
+    'BACKUPS_DIR' => '/home/wangjf/web/myphalapi/Public/myweibo', //原图备份路径
 
 );

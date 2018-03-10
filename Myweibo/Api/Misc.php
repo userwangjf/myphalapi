@@ -163,12 +163,5 @@ class Api_Misc extends PhalApi_Api
         return "$stime";
     }
 
-    public function buildtable() {
-
-        $dm_build = new Domain_Build();
-        return $dm_build->buildData("aa");
-
-    }
-
 
 }

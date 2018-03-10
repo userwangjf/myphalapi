@@ -17,12 +17,12 @@ class Domain_CheckPath {
      */
     private function checkDir($type,$time) {
         $top = null;
-        if(strcmp($type,'thumb') == 0) {
-            $top = DI()->config->get('app.THUMB_DIR');
-        } else if(strcmp($type,'upload') == 0) {
-            $top = DI()->config->get('app.THUMB_DIR');
-        } else if(strcmp($type,'backup') == 0) {
-            $top = DI()->config->get('app.THUMB_DIR');
+        if(strcmp($type,'thumbs') == 0) {
+            $top = DI()->config->get('app.THUMBS_DIR');
+        } else if(strcmp($type,'uploads') == 0) {
+            $top = DI()->config->get('app.UPLOADS_DIR');
+        } else if(strcmp($type,'backups') == 0) {
+            $top = DI()->config->get('app.BACKUPS_DIR');
         }
 
         if($top == null) {
