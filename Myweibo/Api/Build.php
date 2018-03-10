@@ -32,44 +32,132 @@ class Api_Build extends PhalApi_Api {
 
 
     private $total = 0;
-    private $myfile = null;
+    private $flist = null;
     private $src_path = "/home/wangjf/backup/camera";
 
     //搜索原始目录的图片，建立数据库
     public function getTotal() {
 
-        session_start();
+        //$this->setSession('build_total',null);
+        //$this->setSession('build_count',null);
+        //return "";
 
-        $this->scanDir($this->src_path);
+        //检查任务是否正在运行
+        if($this->isRuning()) {
+            $build_total = $this->getSession('build_total');
+            $build_count = $this->getSession('build_count');
+            return "runing: $build_count/$build_total";
+        }
 
-        $_SESSION['build_total'] = $this->total;
-        $_SESSION['build_count'] = 0;
+        $fname = __DIR__."/build.lst";
 
-        return "Find File: ".$this->total;
+        if($this->getSession('build_total') == null) {
+            //搜索目录，建立文件列表文件
+            if(is_file($fname)) {
+                if (!unlink($fname)) {
+                    return ("Error deleting $fname");
+                }
+            }
+
+            $this->flist = fopen($fname,"a");
+
+            $this->scanDir($this->src_path);
+
+            fclose($this->flist);
+
+            $this->setSession('build_total',$this->total);
+            $this->setSession('build_count','0');
+
+            $build_total = $this->getSession('build_total');
+            $build_count = $this->getSession('build_count');
+            return "find file: $build_count/$build_total";
+        } else {
+
+
+            $flist = fopen("$fname","r");
+            $build_total = $this->getSession('build_total');
+            $build_count = (int)$this->getSession('build_count');
+            //return "start : $build_count/$build_total";
+            //跳过已经处理过的
+            if($build_count > 0) {
+                for($i=0;$i<$build_count;$i++) {
+                    if(!fgets($flist))
+                        return "read file error";
+                }
+            }
+            //return "start : $build_count/$build_total";
+
+            /*
+            $line=fgets($flist);
+            $this->moveFile(trim($line));
+            $build_count = (int)$this->getSession('build_count');
+            $build_count++;
+            $this->setSession('build_count',$build_count);
+            fclose($flist);
+            return "$build_count:".trim($line);
+            */
+
+            while($line=fgets($flist)) {
+                $this->moveFile(trim($line));
+                $build_count = (int)$this->getSession('build_count');
+                $build_count++;
+                $this->setSession('build_count',$build_count);
+            }
+
+            fclose($flist);
+
+            $this->setSession('build_total',null);
+            $this->setSession('build_count',null);
+
+            return "All File Copy";
+        }
+
     }
 
     /**
-     * 获取当前处理的进展
-     * @desc 返回0表示停止，返回-1表示错误。
-     * @return int
+     * 检查前一次的处理是否正在运行中
+     * @return bool
      */
-    public function getRatio()
+    public function isRuning()
     {
-        session_start();
-        if (isset($_SESSION['build_count'])) {
-            $end = $_SESSION['build_count'];
-            $build_total = $_SESSION['build_total'];
-            if($end == $build_total) {
-                unset($_SESSION['build_total']);
-                unset($_SESSION['build_count']);
-                return "$end/$build_total";
-            } else {
-                return "$end/$build_total";
-            }
+        $start = $this->getSession('build_count');
+        if($start == null) return false;
+        sleep(2);
+        $end = $this->getSession('build_count');
+        if($start != $end) {
+            return true;
         } else {
-            return -1;
+            return false;
         }
 
+    }
+
+    public function getSession($name) {
+        session_start();
+        if(isset($_SESSION[$name])) {
+            $ret = $_SESSION[$name];
+        } else {
+            session_write_close();
+            return null;
+        }
+        session_write_close();
+        return $ret;
+    }
+
+    /**
+     * 设置session。
+     * @param $name session名字
+     * @param $value 为null，则unset
+     */
+    public function setSession($name,$value) {
+        session_start();
+        if($value == null) {
+            if(isset($_SESSION[$name]))
+                unset($_SESSION[$name]);
+        } else {
+            $_SESSION[$name] = $value;
+        }
+        session_write_close();
     }
 
     public function buildData() {
@@ -173,7 +261,6 @@ class Api_Build extends PhalApi_Api {
         }
 
 
-
         return "";
 
     }
@@ -262,8 +349,9 @@ class Api_Build extends PhalApi_Api {
                     if(is_dir($fname)) {
                         $this->scanDir($fname);
                     } else {
-                        if(checkFileType($fname)) {
+                        if($this->checkFileType($fname)) {
                             $this->total += 1;
+                            fputs($this->flist,$fname."\n");
                         }
                     }
                 }
@@ -283,7 +371,7 @@ class Api_Build extends PhalApi_Api {
                     if(is_dir($fname)) {
                         $this->scanDir($fname);
                     } else {
-                        if(checkFileType($fname)) {
+                        if($this->checkFileType($fname)) {
                             session_start();
                             $build_count = $_SESSION['build_count'];
                             $build_count++;
