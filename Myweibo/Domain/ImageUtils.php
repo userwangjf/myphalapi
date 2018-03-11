@@ -6,7 +6,7 @@
  * Time: 下午6:59
  */
 
-Class Domain_ImgThumb {
+Class ImageUtils {
 
     /**
      * description: 图像等比例压缩
@@ -63,5 +63,28 @@ Class Domain_ImgThumb {
             return false;
         }
     }
+
+
+    /**
+     * 取拍照日期
+     * @desc 默认获取拍摄时间，如果找不到，则返回文件的修改时间
+     * @param string $filePathName 照片完整路径
+     * @return  int 返回时间戳
+     *
+     */
+    public function  getDateTimeOriginal($filePathName) {
+
+        $exif = exif_read_data($filePathName, 0, true);
+        if(empty($exif['EXIF']) || empty($exif['EXIF']['DateTimeOriginal']))
+        {
+            return filemtime($filePathName);
+        }
+        else
+            $date_time_original = $exif['EXIF']['DateTimeOriginal'];//string(19) "2011:03:13 10:23:09"
+
+        $tmp_timestamp  = strtotime($date_time_original);
+        return $tmp_timestamp;
+    }
+
 
 }
