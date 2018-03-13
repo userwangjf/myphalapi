@@ -6,14 +6,22 @@
  * Time: 下午6:36
  */
 
+
+
+
+
 class Domain_Build {
 
     private $total = 0;
     private $flist = null;
-    private $src_path = "/home/wangjf/backup/camera";
+    private $src_path = "/home/wangjf/backup/test";
 
     //搜索原始目录的图片，建立数据库
     public function build() {
+
+        //$imageUtils = new Domain_ImageUtils();
+        //return $imageUtils->getAllExif("/home/wangjf/backup/test/2017-02-19 15-34-17-1.JPG");
+
 
         if($this->src_path == null) {
             return "no file";
@@ -79,7 +87,7 @@ class Domain_Build {
                 $build_count = (int)$this->getSession('build_count');
                 $build_count++;
                 $this->setSession('build_count',$build_count);
-                sleep(1);//for test
+                //sleep(1);//for test
             }
 
             fclose($flist);
@@ -90,6 +98,29 @@ class Domain_Build {
             return "All File Copy";
         }
 
+    }
+
+
+    function writeThumb($old, $new) {///使用ImageMagick
+        $maxsize=1080;
+        $image = new Imagick($old);
+        $exif = $image->getImageOrientation();
+
+        if($image->getImageHeight() <= $image->getImageWidth())
+        {
+            $image->resizeImage($maxsize,0,Imagick::FILTER_LANCZOS,1);
+        }
+        else
+        {
+            $image->resizeImage(0,$maxsize,Imagick::FILTER_LANCZOS,1);
+        }
+
+        $image->setImageCompression(Imagick::COMPRESSION_JPEG);
+        $image->setImageCompressionQuality(100);
+        $image->stripImage();
+        $image->setImageOrientation($exif);
+        $image->writeImage($new);
+        $image->destroy();
     }
 
     /**
@@ -158,7 +189,7 @@ class Domain_Build {
  */
     private function moveFile($srcFile) {
 
-        $imageUtils = new ImageUtils();
+        $imageUtils = new Domain_ImageUtils();
 
         //获取图片的创建时间
         $src_time = $imageUtils->getDateTimeOriginal($srcFile);
@@ -169,10 +200,8 @@ class Domain_Build {
         $picInfo = array();
         $picInfo['uid'] = 0;
         $picInfo['filesize'] = filesize($srcFile);
-        $picInfo['width'] = 0;
-        $picInfo['height'] = 0;
-        $picInfo['twidth'] = 0;
-        $picInfo['theight'] = 0;
+
+
         $picInfo['ctime'] = $src_time;
         $picInfo['time'] = time();
         $picInfo['visible'] = 'true';
@@ -183,7 +212,7 @@ class Domain_Build {
 
         //拷贝upload
         $dst_path = $checkDir->checkUpload($src_time);
-        $picInfo['save'] = $dst_path;
+        $picInfo['uploads'] = $dst_path;
         if($dst_path == null) return null;
         $dst_path = $dst_path.'/'.$dst_name;
         if(!copy($srcFile, $dst_path)) {
@@ -191,9 +220,14 @@ class Domain_Build {
             DI()->response->setRet(220)->setMsg("拷贝upload文件失败");
             return null;
         }
+        list($width, $height, $type, $attr) = getimagesize($dst_path);
+
+        $picInfo['width'] = $width;
+        $picInfo['height'] = $height;
 
         //拷贝backup
         $dst_path = $checkDir->checkBackup($src_time);
+        $picInfo['backups'] = $dst_path;
         if($dst_path == null) return null;
         $dst_path = $dst_path.'/'.$dst_name;
         if(!copy($srcFile, $dst_path)) {
@@ -202,6 +236,17 @@ class Domain_Build {
             return null;
         }
 
+        //创建缩略图
+        $dst_path = $checkDir->checkThumb($src_time);
+        $picInfo['thumbs'] = $dst_path;
+        if($dst_path == null) return null;
+        $dst_path = $dst_path.'/'.$dst_name;
+        //$imageUtils->resizeImage($srcFile,$dst_path,1080,1080);
+        $this->writeThumb($srcFile,$dst_path);
+
+        list($width, $height, $type, $attr) = getimagesize($dst_path);
+        $picInfo['twidth'] = $width;
+        $picInfo['theight'] = $height;
 
         return "";
 
@@ -252,12 +297,47 @@ class Domain_Build {
 
         if(strcmp($ext,".jpg") == 0) {
             return true;
+        } else if(strcmp($ext,".png") == 0) {
+            return true;
+        } else if(strcmp($ext,".mp4") == 0) {
+            return true;
+        } else if(strcmp($ext,".mov") == 0) {
+            return true;
+        } else if(strcmp($ext,".avi") == 0) {
+            return true;
+        } else if(strcmp($ext,".mkv") == 0) {
+            return true;
+        } else if(strcmp($ext,".flv") == 0) {
+            return true;
+        } else if(strcmp($ext,".wmv") == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isMovie($filename) {
+        $ext = strtolower(strrchr($filename, '.'));
+
+        if(strcmp($ext,".jpg") == 0) {
+            return true;
         } else if(strcmp($ext,".mp4") == 0) {
             return true;
         }
 
         return false;
+    }
 
+    public function isImage($filename) {
+        $ext = strtolower(strrchr($filename, '.'));
+
+        if(strcmp($ext,".jpg") == 0) {
+            return true;
+        } else if(strcmp($ext,".mp4") == 0) {
+            return true;
+        }
+
+        return false;
     }
 
 

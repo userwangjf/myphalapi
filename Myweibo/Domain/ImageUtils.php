@@ -6,7 +6,8 @@
  * Time: 下午6:59
  */
 
-Class ImageUtils {
+
+Class Domain_ImageUtils {
 
     /**
      * description: 图像等比例压缩
@@ -22,6 +23,10 @@ Class ImageUtils {
             $im = imagecreatefromjpeg($path);
             $width = imagesx($im);
             $height = imagesy($im);
+            $resize_width_tag = false;
+            $resize_height_tag = false;
+            $width_ratio = 1;
+            $height_ratio = 1;
             if (!is_dir(dirname($out_path))) {
                 mkdir(dirname($out_path), 0755, true);
             }
@@ -58,7 +63,7 @@ Class ImageUtils {
             } else {
                 $res = imagejpeg($im, !empty($out_path) ? $out_path : $path);
             }
-            return $res;
+            return true;
         } catch (\Exception $e) {
             return false;
         }
@@ -74,7 +79,11 @@ Class ImageUtils {
      */
     public function  getDateTimeOriginal($filePathName) {
 
-        $exif = exif_read_data($filePathName, 0, true);
+        if(IMAGETYPE_JPEG != exif_imagetype($filePathName)) {
+            return filemtime($filePathName);
+        }
+
+        $exif = exif_read_data($filePathName, 'EXIF', true);
         if(empty($exif['EXIF']) || empty($exif['EXIF']['DateTimeOriginal']))
         {
             return filemtime($filePathName);
@@ -84,6 +93,21 @@ Class ImageUtils {
 
         $tmp_timestamp  = strtotime($date_time_original);
         return $tmp_timestamp;
+    }
+
+    public function getAllExif($fname) {
+        //$exif = exif_read_data($fname, 'IFD0');
+
+        $exif = exif_read_data($fname, 0, true);
+
+        $ret = "";
+        foreach ($exif as $key => $section) {
+            foreach ($section as $name => $val) {
+                $ret = $ret . "$key.$name:\n";
+            }
+        }
+
+        return $ret;
     }
 
 

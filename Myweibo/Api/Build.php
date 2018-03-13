@@ -15,6 +15,10 @@ class Api_Build extends PhalApi_Api {
 
             ),
 
+            'makeThumb' => array(
+
+            ),
+
         );
     }
 
@@ -27,7 +31,16 @@ class Api_Build extends PhalApi_Api {
     }
 
 
-
+    /**
+     * 从视频文件获取截图
+     * @desc 使用命令行模式来处理
+     * @param $movie
+     * @param $thumb
+     */
+    public function shellMovieThumb($movie,$thumb) {
+        $cmd = "/usr/bin/ffmpeg -ss 2 -i $movie -y -f image2  -vframes 1 $thumb";
+        shell_exec("$cmd");
+    }
 
 
     //单独处理，避免超时
@@ -68,15 +81,7 @@ class Api_Build extends PhalApi_Api {
             return "read_exif_data fail";
         }
 
-        //创建缩略图
-        /*
-        $dst_path = $checkDir->checkThumb($src_time);
-        if($dst_path == null) return null;
-        $dst_path = $dst_path.'/'.$dst_name;
-        $imgThumbs = new Domain_ImgThumb();
-        $imgThumbs->resizeImage($srcFile,$dst_path,1080,1080);
-        unset($imgThumbs);
-        */
+
     }
 
 
